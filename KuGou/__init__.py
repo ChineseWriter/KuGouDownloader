@@ -6,9 +6,8 @@ import os
 import KuGou.JavaScript as JSRequirements
 from KuGou.WebTools import MusicList, MusicInfo, Music
 from KuGou.Main import GetMusicList, GetMusicInfo, SaveMusic
+from KuGou.LocalTools import MusicSheet
 
-
-__version__ = "1.0.1"
 Headers = [
     {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '

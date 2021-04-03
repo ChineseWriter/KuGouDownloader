@@ -86,7 +86,7 @@ class MusicList(object):
         }
         return self.__GetData
 
-    def __GetResponse(self) -> dict:
+    def __GetResponse(self) -> list:
         Response = requests.get(
             'https://complexsearch.kugou.com/v2/search/song?',
             headers=KuGou.Headers[0], params=self.__GetData
@@ -103,7 +103,7 @@ class MusicList(object):
         return MusicList.CleanData(GotMusicList)
 
     @classmethod
-    def CleanData(cls, Data: list):
+    def CleanData(cls, Data: list) -> list:
         Buffer = []
         for OneSongInfo in Data:
             Buffer.append(
@@ -181,20 +181,34 @@ class MusicInfo(object):
         OneMusicInfo["MusicPictureSource"] = Data["img"]
         OneMusicInfo["MusicAuthorName"] = Data["author_name"]
         OneMusicInfo["MusicLyrics"] = Data["lyrics"]
-        OneMusicInfo["MusicSource"] = [Data["play_url"], Data["play_backup_url"]]
-        OneMusicInfo["MusicAuthorPictureSource"] = Data["authors"][0]["avatar"]
+        OneMusicInfo["MusicSource"] = [Data.get("play_url"), Data.get("play_backup_url")]
+        try:
+            OneMusicInfo["MusicObject"] = requests.get(
+                OneMusicInfo["MusicSource"][0], headers=KuGou.Headers[0]
+            ).content
+        except Exception:
+            try:
+                OneMusicInfo["MusicObject"] = requests.get(
+                    OneMusicInfo["MusicSource"][1], headers=KuGou.Headers[0]
+                ).content
+            except Exception:
+                OneMusicInfo["MusicObject"] = b""
+        try:
+            OneMusicInfo["MusicAuthorPictureSource"] = Data["authors"][0]["avatar"]
+            OneMusicInfo["MusicAuthorPicture"] = requests.get(
+                OneMusicInfo["MusicAuthorPictureSource"], headers=KuGou.Headers[0]
+            ).content
+        except KeyError:
+            OneMusicInfo["MusicAuthorPicture"] = b""
+            OneMusicInfo["MusicAuthorPictureSource"] = ""
+        except requests.exceptions.MissingSchema:
+            OneMusicInfo["MusicAuthorPicture"] = b""
         OneMusicInfo["MusicPicture"] = requests.get(
             OneMusicInfo["MusicPictureSource"], headers=KuGou.Headers[0]
         ).content
-        OneMusicInfo["MusicAuthorPicture"] = requests.get(
-            OneMusicInfo["MusicAuthorPictureSource"], headers=KuGou.Headers[0]
-        ).content
-        OneMusicInfo["MusicObject"] = requests.get(
-            OneMusicInfo["MusicSource"][0], headers=KuGou.Headers[0]
-        ).content
         Buffer = []
         for ii in str(OneMusicInfo["MusicLyrics"]).split("\r\n"):
-            if re.match(r"(\[\d\d:\d\d\.\d\d\])(.*?)", ii):
+            if re.match(r"(\[\d\d:\d\d\.\d\d\])(.*?)(##Finish)", ii+"##Finish"):
                 Buffer.append(ii)
         MusicLyrics = ""
         for ii in Buffer:
@@ -217,7 +231,7 @@ class Music(object):
         assert isinstance(Path, str)
         assert os.path.exists(Path)
         self.__MusicInfo = MusicInfo
-        self.__Path = Path
+        self.__Path = Path if Path[-1] == ("/" or "\\") else Path + "/"
 
     def SetPath(self, Path: str = "./") -> str:
         assert os.path.exists(Path)
@@ -227,6 +241,8 @@ class Music(object):
 
     def SaveMusic(self) -> None:
         FilePath = self.__Path + self.__MusicInfo["MusicName"] + ".mp3"
+        if not self.__MusicInfo["MusicObject"]:
+            return None
         with open(FilePath, "wb") as File:
             File.write(self.__MusicInfo["MusicObject"])
         OneMusicObject = eyed3.load(FilePath)
@@ -243,11 +259,12 @@ class Music(object):
             "image/jpeg", "Desc",
             self.__MusicInfo["MusicPictureSource"]
         )
-        OneMusicObject.tag.images.set(
-            7, self.__MusicInfo["MusicAuthorPicture"],
-            "image/jpeg", "Desc",
-            self.__MusicInfo["MusicAuthorPictureSource"]
-        )
+        if self.__MusicInfo["MusicAuthorPicture"]:
+            OneMusicObject.tag.images.set(
+                7, self.__MusicInfo["MusicAuthorPicture"],
+                "image/jpeg", "Desc",
+                self.__MusicInfo["MusicAuthorPictureSource"]
+            )
         OneMusicObject.tag.lyrics.set(self.__MusicInfo["MusicLyrics"])
         if self.__MusicInfo["HaveAlbum"] == 1:
             OneMusicObject.tag.album = self.__MusicInfo["MusicAlbum"]
