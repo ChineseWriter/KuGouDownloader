@@ -1,6 +1,7 @@
 # coding = UTF-8
 
 
+import warnings
 import time
 import re
 import os
@@ -246,6 +247,8 @@ class Music(object):
         with open(FilePath, "wb") as File:
             File.write(self.__MusicInfo["MusicObject"])
         OneMusicObject = eyed3.load(FilePath)
+        if OneMusicObject.info.time_secs <= 65:
+            warnings.warn("The music you downloaded is too short !")
         OneMusicObject.initTag()
         OneMusicObject.tag.title = self.__MusicInfo["MusicName"]
         OneMusicObject.tag.artist = self.__MusicInfo["MusicAuthorName"]

@@ -4,7 +4,6 @@
 import os
 import json
 import copy
-from pygame import mixer
 
 
 class MusicSheet(object):
@@ -69,24 +68,3 @@ class MusicSheet(object):
 
     def GetMusics(self):
         return copy.deepcopy(self.__Musics)
-
-
-class Play(object):
-    def __init__(self):
-        mixer.init()
-        self.__Path = "./"
-
-    def load(self, Path):
-        assert os.path.exists(Path)
-        assert os.path.isfile(Path)
-        self.__Path = Path
-        mixer.music.load(Path)
-        return Path
-
-    def play(self, Times, StartAt=0):
-        mixer.music.play(Times, StartAt)
-        return None
-
-    def stop(self):
-        mixer.music.stop()
-        return None
