@@ -5,6 +5,8 @@ import os
 import json
 import copy
 
+import eyed3
+
 
 class MusicSheet(object):
     def __init__(self, Path="./KuGouMusicList.json"):
@@ -68,3 +70,32 @@ class MusicSheet(object):
 
     def GetMusics(self):
         return copy.deepcopy(self.__Musics)
+
+
+class CheckMusic(object):
+    def __init__(self, Path="./"):
+        assert os.path.exists(Path)
+        self.__Path = Path
+        if self.__Path[-1] != ("\\" or "/"):
+            self.__Path = self.__Path + "/"
+        self.__Musics = \
+            [self.__Path + Music if os.path.splitext(Music)[1] == ".mp3" else "Error" for Music in os.listdir(self.__Path)]
+        Buffer = []
+        for i in self.__Musics:
+            if i == "Error":
+                continue
+            Buffer.append(i)
+        self.__Musics = Buffer
+
+    def DeleteTooShortMusic(self, InputFlag=True):
+        for i in self.__Musics:
+            if eyed3.load(i).info.time_secs <= 65:
+                if InputFlag:
+                    Text = input("Really ? ")
+                    if Text == ("Y" or "y"):
+                        os.remove(i)
+                    else:
+                        pass
+                else:
+                    os.remove(i)
+        return None

@@ -18,11 +18,11 @@ def GetMusicInfo(AlbumID: str, FileHash: str) -> dict:
     return Got.GetMusicInfo()
 
 
-def SaveMusic(MusicInfo: dict, Path: str = "./") -> None:
+def SaveMusic(MusicInfo: dict, Path: str = "./", LrcFile: bool = False) -> None:
     assert isinstance(MusicInfo, dict)
     assert isinstance(Path, str)
     assert os.path.exists(Path)
     Music = KuGou.Music(MusicInfo, Path)
-    Music.SaveMusic()
+    Music.SaveMusic(LrcFile)
     return None
 

@@ -6,7 +6,7 @@ import os
 import KuGou.JavaScript as JSRequirements
 from KuGou.WebTools import MusicList, MusicInfo, Music
 from KuGou.Main import GetMusicList, GetMusicInfo, SaveMusic
-from KuGou.LocalTools import MusicSheet
+from KuGou.LocalTools import MusicSheet, CheckMusic
 
 Headers = [
     {

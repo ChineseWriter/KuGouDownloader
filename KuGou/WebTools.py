@@ -240,9 +240,11 @@ class Music(object):
         self.__Path = Path
         return self.__Path
 
-    def SaveMusic(self) -> None:
+    def SaveMusic(self, LrcFile = False) -> None:
         FilePath = self.__Path + self.__MusicInfo["MusicName"] + ".mp3"
+        LrcFilePath = self.__Path + self.__MusicInfo["MusicName"] + ".lrc"
         if not self.__MusicInfo["MusicObject"]:
+            warnings.warn("The music cannot be downloaded !")
             return None
         with open(FilePath, "wb") as File:
             File.write(self.__MusicInfo["MusicObject"])
@@ -269,6 +271,9 @@ class Music(object):
                 self.__MusicInfo["MusicAuthorPictureSource"]
             )
         OneMusicObject.tag.lyrics.set(self.__MusicInfo["MusicLyrics"])
+        if LrcFile:
+            with open(LrcFilePath, "w", encoding="UTF-8") as File:
+                File.write(self.__MusicInfo["MusicLyrics"])
         if self.__MusicInfo["HaveAlbum"] == 1:
             OneMusicObject.tag.album = self.__MusicInfo["MusicAlbum"]
         OneMusicObject.tag.save(version=(2, 3, 0))
