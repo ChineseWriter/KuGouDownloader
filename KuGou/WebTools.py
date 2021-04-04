@@ -240,14 +240,19 @@ class Music(object):
         self.__Path = Path
         return self.__Path
 
-    def SaveMusic(self, LrcFile = False) -> None:
+    def SaveMusic(self, LrcFile=False, ForceReplace=False) -> None:
         FilePath = self.__Path + self.__MusicInfo["MusicName"] + ".mp3"
         LrcFilePath = self.__Path + self.__MusicInfo["MusicName"] + ".lrc"
         if not self.__MusicInfo["MusicObject"]:
             warnings.warn("The music cannot be downloaded !")
             return None
-        with open(FilePath, "wb") as File:
-            File.write(self.__MusicInfo["MusicObject"])
+        if os.path.exists(FilePath):
+            if ForceReplace:
+                with open(FilePath, "wb") as File:
+                    File.write(self.__MusicInfo["MusicObject"])
+        else:
+            with open(FilePath, "wb") as File:
+                File.write(self.__MusicInfo["MusicObject"])
         OneMusicObject = eyed3.load(FilePath)
         if OneMusicObject.info.time_secs <= 65:
             warnings.warn("The music you downloaded is too short !")

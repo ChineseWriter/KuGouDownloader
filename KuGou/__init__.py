@@ -5,7 +5,7 @@ import os
 
 import KuGou.JavaScript as JSRequirements
 from KuGou.WebTools import MusicList, MusicInfo, Music
-from KuGou.Main import GetMusicList, GetMusicInfo, SaveMusic
+from KuGou.Main import GetMusicList, GetMusicInfo, SaveMusic, Download, ReDownload
 from KuGou.LocalTools import MusicSheet, CheckMusic
 
 Headers = [
@@ -17,3 +17,4 @@ Headers = [
 ]
 Require = os.path.abspath("./KuGou/KuGouRequirement.txt")
 Logo = os.path.abspath("./KuGou/logo.ico")
+Version = "1.0.1"

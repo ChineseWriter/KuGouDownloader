@@ -7,19 +7,27 @@ import copy
 
 import eyed3
 
+import KuGou
+
 
 class MusicSheet(object):
     def __init__(self, Path="./KuGouMusicList.json"):
         if os.path.exists(Path):
             if os.path.isfile(Path):
-                self.__Musics = json.load(open(Path, "r", encoding="UTF-8"))
+                File = json.load(open(Path, "r", encoding="UTF-8"))
+                self.__Musics = File["List"]
+                self.__Information = File["Info"]
             else:
                 raise
         else:
             with open(Path, "w", encoding="UTF-8") as File:
-                File.write("[]")
+                File.write('{"Info": {"MaxNumber": 1000000}, "List": ""}')
             self.__Musics = []
+            self.__Information = {"MaxNumber": 1000000}
         self.__Path = Path
+        self.__Information["MusicSheetVersion"] = "1.0.0"
+        self.__Information["MusicDownloaderVersion"] = KuGou.Version
+        self.__MaxNumber = self.__Information["MaxNumber"]
 
     def Add(self, AlbumID, FileHash, FileName=""):
         self.__Musics: list
@@ -29,7 +37,7 @@ class MusicSheet(object):
         OneMusic = {"FileName": FileName, "FileHash": FileHash, "AlbumID": AlbumID}
         if OneMusic not in self.__Musics:
             self.__Musics.append(OneMusic)
-        if len(self.__Musics) >= 1500:
+        if len(self.__Musics) >= self.__MaxNumber:
             pass
         return copy.deepcopy(OneMusic)
 
@@ -61,7 +69,7 @@ class MusicSheet(object):
         return None
 
     def Save(self):
-        json.dump(self.__Musics, open(self.__Path, "w", encoding="UTF-8"))
+        json.dump({"Info": self.__Information, "List": self.__Musics}, open(self.__Path, "w", encoding="UTF-8"))
         return None
 
     def Musics(self):
@@ -70,6 +78,19 @@ class MusicSheet(object):
 
     def GetMusics(self):
         return copy.deepcopy(self.__Musics)
+
+    def GetSheetVersion(self):
+        return self.__Information["MusicSheetVersion"]
+
+    def GetDownloaderVersion(self):
+        return self.__Information["MusicDownloaderVersion"]
+
+    def SetMaxNumber(self, Number):
+        if isinstance(Number, int):
+            if Number > 0:
+                self.__MaxNumber = Number
+                self.__Information["MaxNumber"] = Number
+        return None
 
 
 class CheckMusic(object):
@@ -89,13 +110,23 @@ class CheckMusic(object):
 
     def DeleteTooShortMusic(self, InputFlag=True):
         for i in self.__Musics:
+            MusicPath = i
+            LrcPath = self.__Path + os.path.splitext(os.path.split(i)[1])[0] + ".lrc"
             if eyed3.load(i).info.time_secs <= 65:
                 if InputFlag:
                     Text = input("Really ? ")
                     if Text == ("Y" or "y"):
-                        os.remove(i)
+                        try:
+                            os.remove(MusicPath)
+                            os.remove(LrcPath)
+                        except Exception:
+                            pass
                     else:
                         pass
                 else:
-                    os.remove(i)
+                    try:
+                        os.remove(MusicPath)
+                        os.remove(LrcPath)
+                    except Exception:
+                        pass
         return None
