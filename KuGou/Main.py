@@ -33,12 +33,15 @@ def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = ".
                LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False):
     Musics = KuGou.MusicSheet(MusicSheetPath)
     if DebugFlag:
-        print("Download the songs in the song list again")
+        print("Download the songs in the song list again .")
     for OneMusic in Musics.Musics():
+        if DebugFlag:
+            print("The basic information of the music :\n\t" + str(OneMusic) + " .")
+            print("\tReady to download again . . .", end="")
         Result = GetMusicInfo(OneMusic["AlbumID"], OneMusic["FileHash"])
         SaveMusic(Result, FilePath, LrcFile, ForceReplace)
         if DebugFlag:
-            print("The basic information of the music :\n\t" + str(OneMusic) + " .")
+            print(" Successful !")
 
 
 def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
@@ -73,5 +76,5 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         print("Ready to download . . .", end="")
     SaveMusic(GetMusicInfo(Result["AlbumID"], Result["FileHash"]), FilePath, LrcFile, ForceReplace)
     if DebugFlag:
-        print("Successful !")
+        print(" Successful !")
     return None
