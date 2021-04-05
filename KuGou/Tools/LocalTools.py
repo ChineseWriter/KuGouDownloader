@@ -11,7 +11,7 @@ import KuGou
 
 
 class MusicSheet(object):
-    def __init__(self, Path="./KuGouMusicList.json"):
+    def __init__(self, Path: str = "./KuGouMusicList.json") -> None:
         if os.path.exists(Path):
             if os.path.isfile(Path):
                 File = json.load(open(Path, "r", encoding="UTF-8"))
@@ -21,7 +21,7 @@ class MusicSheet(object):
                 raise
         else:
             with open(Path, "w", encoding="UTF-8") as File:
-                File.write('{"Info": {"MaxNumber": 1000000}, "List": ""}')
+                File.write('{"Info": {"MaxNumber": 1000000}, "List": []}')
             self.__Musics = []
             self.__Information = {"MaxNumber": 1000000}
         self.__Path = Path
@@ -29,7 +29,7 @@ class MusicSheet(object):
         self.__Information["MusicDownloaderVersion"] = KuGou.Version
         self.__MaxNumber = self.__Information["MaxNumber"]
 
-    def Add(self, AlbumID, FileHash, FileName=""):
+    def Add(self, AlbumID: str, FileHash: str, FileName: str = "") -> dict:
         self.__Musics: list
         assert isinstance(AlbumID, str)
         assert isinstance(FileHash, str)
@@ -41,7 +41,7 @@ class MusicSheet(object):
             pass
         return copy.deepcopy(OneMusic)
 
-    def DropByAlbumID(self, AlbumID):
+    def DropByAlbumID(self, AlbumID: str) -> None:
         assert isinstance(AlbumID, str)
         self.__Musics: list
         for OneMusic in self.__Musics:
@@ -50,7 +50,7 @@ class MusicSheet(object):
                 self.__Musics.remove(OneMusic)
         return None
 
-    def DropByFileHash(self, FileHash):
+    def DropByFileHash(self, FileHash: str) -> None:
         assert isinstance(FileHash, str)
         self.__Musics: list
         for OneMusic in self.__Musics:
@@ -59,7 +59,7 @@ class MusicSheet(object):
                 self.__Musics.remove(OneMusic)
         return None
 
-    def DropByFileName(self, FileName):
+    def DropByFileName(self, FileName: str) -> None:
         assert isinstance(FileName, str)
         self.__Musics: list
         for OneMusic in self.__Musics:
@@ -68,24 +68,24 @@ class MusicSheet(object):
                 self.__Musics.remove(OneMusic)
         return None
 
-    def Save(self):
+    def Save(self) -> None:
         json.dump({"Info": self.__Information, "List": self.__Musics}, open(self.__Path, "w", encoding="UTF-8"))
         return None
 
-    def Musics(self):
+    def Musics(self) -> dict:
         for OneMusic in self.__Musics:
             yield OneMusic
 
-    def GetMusics(self):
+    def GetMusics(self) -> list:
         return copy.deepcopy(self.__Musics)
 
-    def GetSheetVersion(self):
+    def GetSheetVersion(self) -> str:
         return self.__Information["MusicSheetVersion"]
 
-    def GetDownloaderVersion(self):
+    def GetDownloaderVersion(self) -> str:
         return self.__Information["MusicDownloaderVersion"]
 
-    def SetMaxNumber(self, Number):
+    def SetMaxNumber(self, Number: int) -> None:
         if isinstance(Number, int):
             if Number > 0:
                 self.__MaxNumber = Number
@@ -94,7 +94,7 @@ class MusicSheet(object):
 
 
 class CheckMusic(object):
-    def __init__(self, Path="./"):
+    def __init__(self, Path: str = "./") -> None:
         assert os.path.exists(Path)
         self.__Path = Path
         if self.__Path[-1] != ("\\" or "/"):
@@ -108,7 +108,7 @@ class CheckMusic(object):
             Buffer.append(i)
         self.__Musics = Buffer
 
-    def DeleteTooShortMusic(self, InputFlag=True):
+    def DeleteTooShortMusic(self, InputFlag: bool = True) -> None:
         for i in self.__Musics:
             MusicPath = i
             LrcPath = self.__Path + os.path.splitext(os.path.split(i)[1])[0] + ".lrc"
@@ -119,7 +119,7 @@ class CheckMusic(object):
                         try:
                             os.remove(MusicPath)
                             os.remove(LrcPath)
-                        except Exception:
+                        except FileNotFoundError:
                             pass
                     else:
                         pass
@@ -127,6 +127,6 @@ class CheckMusic(object):
                     try:
                         os.remove(MusicPath)
                         os.remove(LrcPath)
-                    except Exception:
+                    except FileNotFoundError:
                         pass
         return None

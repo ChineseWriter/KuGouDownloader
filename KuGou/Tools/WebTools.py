@@ -116,7 +116,7 @@ class MusicList(object):
             )
         return Buffer
 
-    def GetMusicList(self):
+    def GetMusicList(self) -> list:
         self.__SetTimeStamp()
         self.__CreateMusicSignature()
         self.__CreateParams()
@@ -219,7 +219,7 @@ class MusicInfo(object):
             OneMusicInfo["MusicName"] = String.group(3)
         return OneMusicInfo
 
-    def GetMusicInfo(self):
+    def GetMusicInfo(self) -> dict:
         self.__SetTimeStamp()
         self.__CreateParams()
         return MusicInfo.CleanData(self.__GetResponse())

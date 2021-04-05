@@ -8,7 +8,7 @@ import KuGou
 
 
 def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
-               LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False):
+               LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False) -> None:
     Musics = KuGou.Tools.MusicSheet(MusicSheetPath)
     if DebugFlag:
         print("Download the songs in the song list again .")
@@ -20,6 +20,7 @@ def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = ".
         KuGou.Tools.SaveMusic(Result, FilePath, LrcFile, ForceReplace)
         if DebugFlag:
             print(" Successful !")
+    return None
 
 
 def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
