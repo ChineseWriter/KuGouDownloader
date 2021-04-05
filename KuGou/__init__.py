@@ -3,10 +3,10 @@
 
 import os
 
-import KuGou.JavaScript as JSRequirements
-from KuGou.WebTools import MusicList, MusicInfo, Music
-from KuGou.Main import GetMusicList, GetMusicInfo, SaveMusic, Download, ReDownload
-from KuGou.LocalTools import MusicSheet, CheckMusic
+from KuGou import Requirement
+from KuGou import Tools
+
+from KuGou.Controller import Download, ReDownload
 
 Headers = [
     {
@@ -18,3 +18,7 @@ Headers = [
 Require = os.path.abspath("./KuGou/KuGouRequirement.txt")
 Logo = os.path.abspath("./KuGou/logo.ico")
 Version = "1.0.1"
+
+with open("./KuGou/README.md", "r", encoding="UTF-8") as File:
+    Describe = File.read()
+del File

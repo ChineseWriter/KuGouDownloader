@@ -22,7 +22,7 @@ class MusicList(object):
         self.__Signature = ""
         self.__GetData = {}
         self.__JSNameSpace = js2py.EvalJs()
-        self.__JSNameSpace.execute(KuGou.JSRequirements.GetSignFunction)
+        self.__JSNameSpace.execute(KuGou.Requirement.GetSignFunction)
 
     def SetMusicName(self, MusicName: str) -> str:
         assert isinstance(MusicName, str)
@@ -35,7 +35,7 @@ class MusicList(object):
 
     def __CreateMusicSignature(self) -> str:
         DataDict = [
-            KuGou.JavaScript.Key,
+            KuGou.Requirement.Key,
             "bitrate=0",
             "callback=callback123",
             f"clienttime={self.__TimeStamp}",
@@ -54,11 +54,11 @@ class MusicList(object):
             "tag=em",
             "userid=-1",
             f"uuid={self.__TimeStamp}",
-            KuGou.JavaScript.Key,
+            KuGou.Requirement.Key,
         ]
         MusicSign = "o=" + str(DataDict)
         self.__JSNameSpace.execute(MusicSign)
-        self.__JSNameSpace.execute(KuGou.JSRequirements.GetSign)
+        self.__JSNameSpace.execute(KuGou.Requirement.GetSign)
         MusicSign = self.__JSNameSpace.signature
         self.__Signature = MusicSign
         return MusicSign
@@ -171,8 +171,7 @@ class MusicInfo(object):
 
     @classmethod
     def CleanData(cls, Data) -> dict:
-        OneMusicInfo = {"MusicName": Data["audio_name"]}
-        OneMusicInfo["HaveAlbum"] = Data["have_album"]
+        OneMusicInfo = {"MusicName": Data["audio_name"], "HaveAlbum": Data["have_album"]}
         if Data["have_album"] == 1:
             OneMusicInfo["MusicAlbum"] = Data["album_name"]
         else:
@@ -227,11 +226,11 @@ class MusicInfo(object):
 
 
 class Music(object):
-    def __init__(self, MusicInfo: dict, Path: str = "./") -> None:
-        assert isinstance(MusicInfo, dict)
+    def __init__(self, MusicInformation: dict, Path: str = "./") -> None:
+        assert isinstance(MusicInformation, dict)
         assert isinstance(Path, str)
         assert os.path.exists(Path)
-        self.__MusicInfo = MusicInfo
+        self.__MusicInfo = MusicInformation
         self.__Path = Path if Path[-1] == ("/" or "\\") else Path + "/"
 
     def SetPath(self, Path: str = "./") -> str:
