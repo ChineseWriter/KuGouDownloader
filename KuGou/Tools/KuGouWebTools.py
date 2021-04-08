@@ -111,7 +111,9 @@ class MusicList(object):
                 {
                     "AlbumID": OneSongInfo["AlbumID"],
                     "FileHash": OneSongInfo["FileHash"],
-                    "FileName": OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")
+                    "FileName": OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "").replace("/",
+                                                                                                         "-").replace(
+                        "\\", "-")
                 }
             )
         return Buffer
@@ -208,7 +210,7 @@ class MusicInfo(object):
         ).content
         Buffer = []
         for ii in str(OneMusicInfo["MusicLyrics"]).split("\r\n"):
-            if re.match(r"(\[\d\d:\d\d\.\d\d\])(.*?)(##Finish)", ii+"##Finish"):
+            if re.match(r"(\[\d\d:\d\d\.\d\d\])(.*?)(##Finish)", ii + "##Finish"):
                 Buffer.append(ii)
         MusicLyrics = ""
         for ii in Buffer:
@@ -216,7 +218,7 @@ class MusicInfo(object):
         MusicLyrics.rstrip("\r\n")
         String = re.match("(.*?)( - )(.*?)(-)", OneMusicInfo["MusicName"] + "-")
         if String:
-            OneMusicInfo["MusicName"] = String.group(3)
+            OneMusicInfo["MusicName"] = String.group(3).replace("/", "-").replace("\\", "-")
         return OneMusicInfo
 
     def GetMusicInfo(self) -> dict:

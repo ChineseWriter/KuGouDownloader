@@ -11,30 +11,46 @@ import KuGou
 
 
 class MusicSheet(object):
+    DefaultMusicSheetVersion = "1.0.0"
+    DefaultMusicDownloaderVersion = KuGou.Version
+    DefaultMaxNumber = 10000
+
     def __init__(self, Path: str = "./KuGouMusicList.json") -> None:
         if os.path.exists(Path):
-            if os.path.isfile(Path):
-                File = json.load(open(Path, "r", encoding="UTF-8"))
-                self.__Musics = File["List"]
-                self.__Information = File["Info"]
-            else:
-                raise
+            self.__InitWithFile(Path)
         else:
-            with open(Path, "w", encoding="UTF-8") as File:
-                File.write('{"Info": {"MaxNumber": 1000000}, "List": []}')
-            self.__Musics = []
-            self.__Information = {"MaxNumber": 1000000}
+            self.__InitWithoutFile(Path)
         self.__Path = Path
-        self.__Information["MusicSheetVersion"] = "1.0.0"
-        self.__Information["MusicDownloaderVersion"] = KuGou.Version
-        self.__MaxNumber = self.__Information["MaxNumber"]
 
-    def Add(self, AlbumID: str, FileHash: str, FileName: str = "") -> dict:
+    def __InitWithoutFile(self, Path):
+        with open(Path, "w", encoding="UTF-8") as File:
+            File.write('{"Info": {"MaxNumber": 1000000}, "List": []}')
+        self.__Musics = []
+        self.__MaxNumber = self.DefaultMaxNumber
+        self.__MusicSheetVersion = self.DefaultMusicSheetVersion
+        self.__MusicDownloaderVersion = self.DefaultMusicDownloaderVersion
+        return None
+
+    def __InitWithFile(self, Path):
+        if not os.path.isfile(Path):
+            raise
+        File = json.load(open(Path, "r", encoding="UTF-8"))
+        try:
+            self.__Musics = File["List"]
+            self.__Information = File["Info"]
+            self.__MaxNumber = File["Info"]["MaxNumber"]
+            self.__MusicSheetVersion = File["Info"]["MusicSheetVersion"]
+            self.__MusicDownloaderVersion = File["Info"]["MusicDownloaderVersion"]
+        except Exception:
+            raise
+        return None
+
+    def Add(self, AlbumID: str, FileHash: str, FileName: str = "", From: str = "KuGou") -> dict:
         self.__Musics: list
         assert isinstance(AlbumID, str)
         assert isinstance(FileHash, str)
         assert isinstance(FileName, str)
-        OneMusic = {"FileName": FileName, "FileHash": FileHash, "AlbumID": AlbumID}
+        OneMusic = {"FileName": FileName, "FileHash": FileHash, "AlbumID": AlbumID, "From": From}
         if OneMusic not in self.__Musics:
             self.__Musics.append(OneMusic)
         if len(self.__Musics) >= self.__MaxNumber:
@@ -69,7 +85,14 @@ class MusicSheet(object):
         return None
 
     def Save(self) -> None:
-        json.dump({"Info": self.__Information, "List": self.__Musics}, open(self.__Path, "w", encoding="UTF-8"))
+        Object = dict()
+        Object["Info"] = {
+            "MaxNumber": self.__MaxNumber,
+            "MusicSheetVersion": self.__MusicSheetVersion,
+            "MusicDownloaderVersion": self.__MusicDownloaderVersion
+        }
+        Object["List"] = self.__Musics
+        json.dump(Object, open(self.__Path, "w", encoding="UTF-8"))
         return None
 
     def Musics(self) -> dict:
@@ -108,11 +131,11 @@ class CheckMusic(object):
             Buffer.append(i)
         self.__Musics = Buffer
 
-    def DeleteTooShortMusic(self, InputFlag: bool = True) -> None:
+    def DeleteVIPMusic(self, InputFlag: bool = True) -> None:
         for i in self.__Musics:
             MusicPath = i
             LrcPath = self.__Path + os.path.splitext(os.path.split(i)[1])[0] + ".lrc"
-            if eyed3.load(i).info.time_secs <= 65:
+            if 59.3 <= eyed3.load(i).info.time_secs <= 60.7:
                 if InputFlag:
                     Text = input("Really ? ")
                     if Text == ("Y" or "y"):

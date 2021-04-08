@@ -1,4 +1,6 @@
 # coding = UTF-8
+# KuGouJavaScript.py
+"""爬取酷狗网站时需要的签名构造函数(JavaScript)"""
 
 
 # 来源：https://staticssl.kugou.com/common/js/min/inf_public-min.js
