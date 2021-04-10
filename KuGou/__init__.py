@@ -3,10 +3,6 @@
 
 import os
 
-from KuGou import Requirement
-from KuGou import Tools
-
-from KuGou.Controller import Download, ReDownload
 
 Headers = [
     {
@@ -22,3 +18,9 @@ Version = "1.0.1"
 with open("./KuGou/README.md", "r", encoding="UTF-8") as File:
     Describe = File.read()
 del File
+
+
+from KuGou import Requirement
+from KuGou import Tools
+
+from KuGou.Controller import Download, ReDownload

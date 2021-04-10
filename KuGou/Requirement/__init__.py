@@ -4,6 +4,7 @@
 
 
 from KuGou.Requirement.KuGouJavaScript import Key, GetSign, GetSignFunction
+from KuGou.Requirement.WangYiYunAES import AESKey
 
 
 # 导入必需的第三方库
