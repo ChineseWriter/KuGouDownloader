@@ -204,8 +204,19 @@ class MusicList(object):
 
 
 class MusicInfo(object):
-    """获取歌曲相关数据。"""
+    """从酷狗官网获取歌曲相关数据。"""
+
     def __init__(self, AlbumID: str, FileHash: str) -> None:
+        """初始化该类
+
+        检查两参数是否均为str类型，设置时间戳，创建请求负载数据容器，绑定两参数到类属性。
+
+        ::Usage:
+            >>>var = MusicInfo("4139345", "08519C4B628FCC6292A46A508E11DFA2")
+
+        :param AlbumID: 歌曲所属专辑的ID
+        :param FileHash: 歌曲的哈希值
+        """
         assert isinstance(AlbumID, str)
         assert isinstance(FileHash, str)
         self.__TimeStamp = int(time.time() * 1000)
