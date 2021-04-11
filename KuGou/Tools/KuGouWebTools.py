@@ -15,16 +15,41 @@ import KuGou
 
 
 class MusicList(object):
+    """从酷狗获取要查询的歌曲的结果列表"""
+
     def __init__(self, MusicName: str) -> None:
+        """初始化该类
+
+        检查参数正确性，创建时间戳，初始化签名和数据容器，初始化JS命名空间(初始化命名空间并添加签名创建函数)。
+
+        ::Usage:
+            >>> var = MusicList("匆匆那年 王菲")
+
+        :param MusicName: 要下载的歌曲名，必须为str类型。
+        """
+        # 检查传入的参数是否为str类型
         assert isinstance(MusicName, str)
+        # 创建时间戳，为Python标准返回时间戳的一百倍再取整
         self.__TimeStamp = int(time.time() * 1000)
-        self.__MusicName = MusicName
-        self.__Signature = ""
-        self.__GetData = {}
+        self.__MusicName = MusicName  # 绑定歌曲名
+        self.__Signature = ""  # 初始化签名容器
+        self.__GetData = {}  # 初始化数据容器
+        # 初始化JavaScript命名空间
         self.__JSNameSpace = js2py.EvalJs()
+        # 添加JavaScript编写的签名构造函数
         self.__JSNameSpace.execute(KuGou.Requirement.GetSignFunction)
 
     def SetMusicName(self, MusicName: str) -> str:
+        """设置或重置歌曲名
+
+        检查参数正确性，改变实例属性__MusicName到传入的参数值。
+
+        ::Usage:
+            >>>MusicList.SetMusicName("匆匆那年 王菲")
+
+        :param MusicName: 要下载的歌曲名，必须为str类型。
+        :return: 传入的歌曲名，为str类型。
+        """
         assert isinstance(MusicName, str)
         self.__MusicName = MusicName
         return self.__MusicName

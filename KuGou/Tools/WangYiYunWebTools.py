@@ -10,6 +10,9 @@ from KuGou.Requirement import AESKey
 
 class MusicList(object):
     SearchUrl = "https://music.163.com/weapi/cloudsearch/get/web?csrf_token="
+    LyricUrl = "https://music.163.com/weapi/song/lyric?csrf_token="
+    MusicSourceUrl = "https://music.163.com/weapi/song/enhance/player/url?csrf_token="
+    AuthorUrl = "https://music.163.com/artist"
 
     def __init__(self) -> None:
         self.__Headers = {
@@ -21,12 +24,13 @@ class MusicList(object):
         self.__GetParams = None
         self.__GetData = []
         self.__MusicName = ""
+        self.__CleanedData = []
 
-    def __CreateParams(self, MusicName: str) -> dict:
+    def __CreateParams(self) -> dict:
         Data = {
             "hlpretag": "",
             "hlposttag": "",
-            "s": MusicName,
+            "s": self.__MusicName,
             "type": "1",
             "offset": "0",
             "total": "true",
@@ -37,9 +41,9 @@ class MusicList(object):
         self.__GetParams = self.KeyCreator.GetParams(Data)
         return self.__GetParams
 
-    def __GetResponse(self, MusicName: str) -> None:
-        self.__CreateParams(MusicName)
-        OneResponse = requests.post(self.SearchUrl, data=self.__GetParams)
+    def __GetResponse(self) -> None:
+        self.__CreateParams()
+        OneResponse = requests.post(self.SearchUrl, data=self.__GetParams, headers=self.__Headers)
         try:
             JsonData = OneResponse.json()
             if JsonData["code"] != 200:
@@ -51,17 +55,40 @@ class MusicList(object):
         return self.__GetData
 
     def __CleanData(self):
+        Buffer = []
         for OneMusic in self.__GetData:
-            MusicName = OneMusic['name']
-            MusicID = OneMusic['id']
-            MusicSinger = OneMusic['ar'][0]
-            MusicAlbum = OneMusic["al"][0]
+            OneMusicInfo = {"Name": OneMusic["name"], "ID": OneMusic["id"]}
+            if OneMusic.get("al"):
+                OneMusicInfo["AlbumID"] = OneMusic["al"]["id"]
+                OneMusicInfo["MusicPictureSource"] = OneMusic["al"]["picUrl"]
+            else:
+                OneMusicInfo["AlbumID"] = ""
+            OneMusicInfo["MusicAuthorName"] = OneMusic["ar"][0]["name"]
+            OneMusicInfo["MusicAuthorID"] = OneMusic["ar"][0][""]
+            try:
+                OneMusicInfo["MusicLyrics"] = requests.post(self.LyricUrl, data=self.KeyCreator.GetParams(
+                    json.dumps({"id": OneMusicInfo["ID"], "lv": -1, "tv": -1, "csrf_token": ""})),
+                                                            headers=self.__Headers).json()['lrc']['lyric']
+            except Exception:
+                OneMusicInfo["MusicLyrics"] = "[00:00.00]纯音乐，请欣赏。"
+            try:
+                OneMusicInfo["MusicSource"] = requests.post(self.MusicSourceUrl, data=self.KeyCreator.GetParams(
+                    json.dumps({"ids": [OneMusicInfo["ID"]], "br": 128000, "csrf_token": ""})),
+                                                            headers=self.__Headers).json()['data'][0]['url']
+            except Exception as AllError:
+                raise AllError
+            Buffer.append(OneMusicInfo)
+        self.__CleanedData = Buffer
+        return None
 
-    def SetMusicName(self, MusicName):
+    def __SetMusicName(self, MusicName):
         if not isinstance(MusicName, str):
             raise
         self.__MusicName = MusicName
         return None
 
-    def GetMusicList(self):
-        pass
+    def GetMusicList(self, MusicName: str):
+        self.__SetMusicName(MusicName)
+        self.__GetResponse()
+        self.__CleanData()
+        return None

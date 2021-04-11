@@ -1,4 +1,5 @@
 # coding = UTF-8
+"""爬取网易云网站时需要的密钥构造函数(采用AES的CBC模式加密)。"""
 
 
 import random
