@@ -5,7 +5,9 @@
 from KuGou.Tools.LocalTools import MusicSheet, CheckMusic
 
 # 导入酷狗音乐必需的下载组件
-from KuGou.Tools.KuGouWebTools import MusicList, MusicInfo, Music
+from KuGou.Tools.KuGouWebTools import MusicList as KuGouMusicList
+from KuGou.Tools.KuGouWebTools import MusicInfo as KuGouMusicInfo
+from KuGou.Tools.KuGouWebTools import Music
 
 # 导入网易云音乐必需的下载组件
 from KuGou.Tools.WangYiYunWebTools import MusicList as WangYiYunMusicList
