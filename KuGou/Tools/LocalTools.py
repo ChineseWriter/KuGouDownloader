@@ -16,6 +16,9 @@ class MusicSheet(object):
     DefaultMaxNumber = 10000
 
     def __init__(self, Path: str = "./KuGouMusicList.json") -> None:
+        self.__MaxNumber = 0
+        self.__MusicSheetVersion = ""
+        self.__MusicDownloaderVersion = ""
         if os.path.exists(Path):
             self.__InitWithFile(Path)
         else:
@@ -37,7 +40,6 @@ class MusicSheet(object):
         File = json.load(open(Path, "r", encoding="UTF-8"))
         try:
             self.__Musics = File["List"]
-            self.__Information = File["Info"]
             self.__MaxNumber = File["Info"]["MaxNumber"]
             self.__MusicSheetVersion = File["Info"]["MusicSheetVersion"]
             self.__MusicDownloaderVersion = File["Info"]["MusicDownloaderVersion"]
@@ -50,6 +52,7 @@ class MusicSheet(object):
         assert isinstance(AlbumID, str)
         assert isinstance(FileHash, str)
         assert isinstance(FileName, str)
+        assert isinstance(From, str)
         OneMusic = {"FileName": FileName, "FileHash": FileHash, "AlbumID": AlbumID, "From": From}
         if OneMusic not in self.__Musics:
             self.__Musics.append(OneMusic)
@@ -103,16 +106,15 @@ class MusicSheet(object):
         return copy.deepcopy(self.__Musics)
 
     def GetSheetVersion(self) -> str:
-        return self.__Information["MusicSheetVersion"]
+        return self.__MusicSheetVersion
 
     def GetDownloaderVersion(self) -> str:
-        return self.__Information["MusicDownloaderVersion"]
+        return self.__MusicDownloaderVersion
 
     def SetMaxNumber(self, Number: int) -> None:
         if isinstance(Number, int):
             if Number > 0:
                 self.__MaxNumber = Number
-                self.__Information["MaxNumber"] = Number
         return None
 
 
@@ -132,10 +134,10 @@ class CheckMusic(object):
         self.__Musics = Buffer
 
     def DeleteVIPMusic(self, InputFlag: bool = True) -> None:
-        for i in self.__Musics:
-            MusicPath = i
-            LrcPath = self.__Path + os.path.splitext(os.path.split(i)[1])[0] + ".lrc"
-            if 59.3 <= eyed3.load(i).info.time_secs <= 60.7:
+        for OneMusic in self.__Musics:
+            MusicPath = OneMusic
+            LrcPath = self.__Path + os.path.splitext(os.path.split(OneMusic)[1])[0] + ".lrc"
+            if 59.3 <= eyed3.load(OneMusic).info.time_secs <= 60.7:
                 if InputFlag:
                     Text = input("Really ? ")
                     if Text == ("Y" or "y"):

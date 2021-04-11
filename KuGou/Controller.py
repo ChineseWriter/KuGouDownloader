@@ -42,7 +42,7 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
     Result = Selector(Result)
     if not isinstance(Result, dict):
         raise ValueError("The return value of the Function 'Selector' is incorrect .")
-    if len(Result) != 3:
+    if len(Result) != 4:
         raise ValueError("The return value of the Function 'Selector' is incorrect .")
     if not Result.get("FileHash") and Result.get("FileName"):
         raise ValueError("The return value of the Function 'Selector' is incorrect .")
@@ -51,11 +51,12 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
     if DebugFlag:
         print("The basic information of the music :\n\t" + str(Result) + " .")
     Musics = KuGou.Tools.MusicSheet(MusicSheetPath)
-    Musics.Add(Result["AlbumID"], Result["FileHash"], Result["FileName"])
+    Musics.Add(Result["AlbumID"], Result["FileHash"], Result["FileName"], Result["From"])
     Musics.Save()
     if DebugFlag:
         print("Ready to download . . .", end="")
-    KuGou.Tools.SaveMusic(KuGou.Tools.GetMusicInfo(Result["AlbumID"], Result["FileHash"]), FilePath, LrcFile, ForceReplace)
+    KuGou.Tools.SaveMusic(KuGou.Tools.GetMusicInfo(Result["AlbumID"], Result["FileHash"]), FilePath, LrcFile,
+                          ForceReplace)
     if DebugFlag:
         print(" Successful !")
     return None

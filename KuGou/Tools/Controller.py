@@ -19,7 +19,7 @@ def GetMusicList(MusicName: str) -> list:
     :return: 歌曲列表，为list类型
     """
     assert isinstance(MusicName, str)
-    Creator = KuGou.Tools.MusicList(MusicName)
+    Creator = KuGou.Tools.KuGouMusicList(MusicName)
     return Creator.GetMusicList()
 
 
@@ -27,7 +27,7 @@ def GetMusicInfo(AlbumID: str, FileHash: str) -> dict:
     """获取歌曲的相关数据"""
     assert isinstance(AlbumID, str)
     assert isinstance(FileHash, str)
-    Got = KuGou.Tools.MusicInfo(AlbumID, FileHash)
+    Got = KuGou.Tools.KuGouMusicInfo(AlbumID, FileHash)
     return Got.GetMusicInfo()
 
 
