@@ -2,8 +2,6 @@
 """对所有下载器进行封装，可操作多个网站的数据。"""
 
 
-import os
-
 import KuGou
 
 
@@ -23,20 +21,9 @@ def GetMusicList(MusicName: str) -> list:
     return Creator.GetMusicList()
 
 
-def GetMusicInfo(AlbumID: str, FileHash: str) -> dict:
+def GetMusicInfo(AlbumID: str, FileHash: str):  # -> KuGou.Music:
     """获取歌曲的相关数据"""
     assert isinstance(AlbumID, str)
     assert isinstance(FileHash, str)
     Got = KuGou.Tools.KuGouMusicInfo(AlbumID, FileHash)
     return Got.GetMusicInfo()
-
-
-def SaveMusic(MusicInfo: dict, Path: str = "./", LrcFile: bool = False, ForceReplace: bool = False) -> None:
-    """保存歌曲及歌曲相关数据"""
-    assert isinstance(MusicInfo, dict)
-    assert isinstance(Path, str)
-    assert os.path.exists(Path)
-    Music = KuGou.Tools.Music(MusicInfo, Path)
-    Music.SaveMusic(LrcFile, ForceReplace)
-    return None
-

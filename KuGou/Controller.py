@@ -9,15 +9,18 @@ import KuGou
 
 def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
                LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False) -> None:
-    Musics = KuGou.Tools.MusicSheet(MusicSheetPath)
+    Musics = KuGou.MusicList()
+    Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
     if DebugFlag:
         print("Download the songs in the song list again .")
-    for OneMusic in Musics.Musics():
+    for OneMusic in Musics.AllItem():
+        OneMusic: KuGou.Music
         if DebugFlag:
-            print("The basic information of the music :\n\t" + str(OneMusic) + " .")
+            print("The basic information of the music :\n\t" + str(OneMusic.Name) + " .")
             print("\tReady to download again . . .", end="")
-        Result = KuGou.Tools.GetMusicInfo(OneMusic["AlbumID"], OneMusic["FileHash"])
-        KuGou.Tools.SaveMusic(Result, FilePath, LrcFile, ForceReplace)
+        if OneMusic.From == KuGou.Music.From_KuGou:
+            Result = KuGou.Tools.GetMusicInfo(OneMusic.AlbumID, OneMusic.FileHash)
+            Result.Save(FilePath, LrcFile, ForceReplace)
         if DebugFlag:
             print(" Successful !")
     return None
@@ -50,13 +53,14 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         Result["AlbumID"] = ""
     if DebugFlag:
         print("The basic information of the music :\n\t" + str(Result) + " .")
-    Musics = KuGou.Tools.MusicSheet(MusicSheetPath)
-    Musics.Add(Result["AlbumID"], Result["FileHash"], Result["FileName"], Result["From"])
-    Musics.Save()
     if DebugFlag:
         print("Ready to download . . .", end="")
-    KuGou.Tools.SaveMusic(KuGou.Tools.GetMusicInfo(Result["AlbumID"], Result["FileHash"]), FilePath, LrcFile,
-                          ForceReplace)
+    Result = KuGou.Tools.GetMusicInfo(Result["AlbumID"], Result["FileHash"])
+    Result.Save(FilePath, LrcFile, ForceReplace)
     if DebugFlag:
         print(" Successful !")
+    Musics = KuGou.MusicList()
+    Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
+    Musics.Append(Result)
+    Musics.Save(KuGou.MusicList.Json, MusicSheetPath)
     return None
