@@ -324,8 +324,13 @@ class MusicSheet(object):
 
     def Append(self, Music: MusicItem):
         assert isinstance(Music, MusicItem)
-        if Music not in self.__MusicList:
-            self.__MusicList.append(Music)
+        if Music.From == MusicItem.From_KuGou:
+            for OneMusic in self.__MusicList:
+                OneMusic: MusicItem
+                if OneMusic.FileHash == Music.FileHash and OneMusic.AlbumID == Music.AlbumID:
+                    break
+            else:
+                self.__MusicList.append(Music)
         return None
 
     def AllItem(self):

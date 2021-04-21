@@ -274,7 +274,10 @@ class MusicInfo(object):
                 OneMusic.MusicSource = Data.get("play_backup_url")
             else:
                 return KuGou.Music()
-        OneMusic.AuthorPictureSource = Data["authors"][0]["avatar"]
+        try:
+            OneMusic.AuthorPictureSource = Data["authors"][0]["avatar"]
+        except KeyError:
+            OneMusic.AuthorPictureSource = "https://www.kugou.com/yy/static/images/play/default.jpg"
         OneMusic.ReloadInfo()
         String = re.match("(.*?)( - )(.*?)(-)", Data["audio_name"] + "-")
         if String:
