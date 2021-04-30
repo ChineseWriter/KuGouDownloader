@@ -10,7 +10,7 @@ from KuGou.Tools.WebTools import KuGouMusicList
 from KuGou.Tools.WebTools import KuGouMusicInfo
 
 # 导入网易云音乐必需的下载组件
-# from KuGou.Tools.WangYiYunWebTools import MusicList as WangYiYunMusicList
+from KuGou.Tools.WebTools import WangYiYunMusicList
 
 # 导入聚合管理模块(可聚合并操作多个网站的结果)
 from KuGou.Tools.Controller import GetMusicList, GetMusicInfo

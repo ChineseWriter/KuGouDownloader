@@ -19,6 +19,7 @@ VERSION = "1.0.0"
 class MusicItem(object):
     __Supported = KuGou.Supported
     From_KuGou = "KuGou"
+    From_WangYiYun = "WangYiYun"
 
     def __init__(self, Name: str = "", From: str = "KuGou", AuthorName: str = "", MusicSource: str = "",
                  MusicObject: bytes = b"",

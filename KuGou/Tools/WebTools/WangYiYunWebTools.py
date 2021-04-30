@@ -7,6 +7,8 @@ import requests
 
 from KuGou.Requirement import AESKey
 
+from KuGou import Music
+
 
 class MusicList(object):
     SearchUrl = "https://music.163.com/weapi/cloudsearch/get/web?csrf_token="
@@ -57,6 +59,7 @@ class MusicList(object):
     def __CleanData(self):
         Buffer = []
         for OneMusic in self.__GetData:
+            OneMusicInfo = Music()
             OneMusicInfo = {"Name": OneMusic["name"], "ID": OneMusic["id"]}
             if OneMusic.get("al"):
                 OneMusicInfo["AlbumID"] = OneMusic["al"]["id"]
@@ -64,7 +67,7 @@ class MusicList(object):
             else:
                 OneMusicInfo["AlbumID"] = ""
             OneMusicInfo["MusicAuthorName"] = OneMusic["ar"][0]["name"]
-            OneMusicInfo["MusicAuthorID"] = OneMusic["ar"][0][""]
+            OneMusicInfo["MusicAuthorID"] = OneMusic["ar"][0]["id"]
             try:
                 OneMusicInfo["MusicLyrics"] = requests.post(self.LyricUrl, data=self.KeyCreator.GetParams(
                     json.dumps({"id": OneMusicInfo["ID"], "lv": -1, "tv": -1, "csrf_token": ""})),
