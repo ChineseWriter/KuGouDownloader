@@ -22,7 +22,7 @@ class MusicItem(object):
     From_WangYiYun = "WangYiYun"
 
     def __init__(self, Name: str = "", From: str = "KuGou", AuthorName: str = "", MusicSource: str = "",
-                 MusicObject: bytes = b"",
+                 MusicObject: bytes = b"", FileId: int = 0, AuthorId: int = 0,
                  PictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg", Picture: bytes = b"",
                  AuthorPictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg",
                  AuthorPicture: bytes = b"", Lyrics: str = "[00:00.00]纯音乐，请欣赏。", Album: str = "", FileHash: str = "",
@@ -32,6 +32,8 @@ class MusicItem(object):
         assert From in self.__Supported
         assert isinstance(MusicSource, str)
         assert isinstance(MusicObject, bytes)
+        assert isinstance(FileId, int)
+        assert isinstance(AuthorId, int)
         assert isinstance(AuthorName, str)
         assert isinstance(PictureSource, str)
         assert isinstance(Picture, bytes)
@@ -45,6 +47,8 @@ class MusicItem(object):
         self.__From = From
         self.__MusicSource = MusicSource
         self.__MusicObject = MusicObject
+        self.__FileId = FileId
+        self.__AuthorId = AuthorId
         self.__AuthorName = AuthorName
         self.__PictureSource = PictureSource
         self.__Picture = Picture
@@ -92,6 +96,24 @@ class MusicItem(object):
     def MusicObject(self, MusicObject: bytes = b""):
         assert isinstance(MusicObject, bytes)
         self.__MusicObject = MusicObject
+
+    @property
+    def FileId(self) -> int:
+        return self.__FileId
+
+    @FileId.setter
+    def FileId(self, FileId: int = 0):
+        assert isinstance(FileId, int)
+        self.__FileId = FileId
+
+    @property
+    def AuthorId(self):
+        return self.__AuthorId
+
+    @AuthorId.setter
+    def AuthorId(self, AuthorId: int = 0):
+        assert isinstance(AuthorId, int)
+        self.__AuthorId = AuthorId
 
     @property
     def AuthorName(self) -> str:
@@ -144,8 +166,15 @@ class MusicItem(object):
             warnings.warn("The lyrics you given is nothing .")
             return None
         Buffer = []
-        for Item in Lyrics.split("\r\n"):
-            if re.match(r"([\d\d:\d\d.\d\d])(.*?)(##Finish)", Item + "##Finish"):
+        Lyrics = Lyrics.replace("\r", "").replace("\n\n", "\n")
+        for Item in Lyrics.split("\n"):
+            AppendFlag = False
+            TestItem = Item + "##Finish"
+            if re.match(r"(\[\d\d\:\d\d\.\d\d\])(.*?)(##Finish)", TestItem):
+                AppendFlag = True
+            elif re.match(r"(\[\d\d\:\d\d\.\d\d\d\])(.*?)(##Finish)", TestItem):
+                AppendFlag = True
+            if AppendFlag:
                 Buffer.append(Item)
         MusicLyrics = ""
         for Item in Buffer:

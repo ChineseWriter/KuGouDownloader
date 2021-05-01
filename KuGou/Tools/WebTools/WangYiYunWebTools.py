@@ -7,7 +7,7 @@ import requests
 
 from KuGou.Requirement import AESKey
 
-from KuGou import Music
+import KuGou
 
 
 class MusicList(object):
@@ -59,30 +59,55 @@ class MusicList(object):
     def __CleanData(self):
         Buffer = []
         for OneMusic in self.__GetData:
-            OneMusicInfo = Music()
-            OneMusicInfo = {"Name": OneMusic["name"], "ID": OneMusic["id"]}
+            OneMusicInfo = KuGou.Music()
+            OneMusicInfo.From = KuGou.Music.From_WangYiYun
+            OneMusicInfo.Name = OneMusic["name"]
+            OneMusicInfo.FileId = OneMusic["id"]
             if OneMusic.get("al"):
-                OneMusicInfo["AlbumID"] = OneMusic["al"]["id"]
-                OneMusicInfo["MusicPictureSource"] = OneMusic["al"]["picUrl"]
+                OneMusicInfo.AlbumID = str(OneMusic["al"]["id"])
+                OneMusicInfo.PictureSource = OneMusic["al"]["picUrl"]
             else:
-                OneMusicInfo["AlbumID"] = ""
-            OneMusicInfo["MusicAuthorName"] = OneMusic["ar"][0]["name"]
-            OneMusicInfo["MusicAuthorID"] = OneMusic["ar"][0]["id"]
-            try:
-                OneMusicInfo["MusicLyrics"] = requests.post(self.LyricUrl, data=self.KeyCreator.GetParams(
-                    json.dumps({"id": OneMusicInfo["ID"], "lv": -1, "tv": -1, "csrf_token": ""})),
-                                                            headers=self.__Headers).json()['lrc']['lyric']
-            except Exception:
-                OneMusicInfo["MusicLyrics"] = "[00:00.00]纯音乐，请欣赏。"
-            try:
-                OneMusicInfo["MusicSource"] = requests.post(self.MusicSourceUrl, data=self.KeyCreator.GetParams(
-                    json.dumps({"ids": [OneMusicInfo["ID"]], "br": 128000, "csrf_token": ""})),
-                                                            headers=self.__Headers).json()['data'][0]['url']
-            except Exception as AllError:
-                raise AllError
+                OneMusicInfo.AlbumID = ""
+            OneMusicInfo.AuthorName = OneMusic["ar"][0]["name"]
+            OneMusicInfo.AuthorId = OneMusic["ar"][0]["id"]
+            self.__GetLyrics(OneMusicInfo, str(OneMusicInfo.FileId))
+            self.__GetMusicSource(OneMusicInfo, OneMusicInfo.FileId)
             Buffer.append(OneMusicInfo)
         self.__CleanedData = Buffer
         return None
+
+    def __GetLyrics(self, OneMusic, MusicId):
+        OneMusic: KuGou.Music
+        try:
+            Params = {"id": str(MusicId), "lv": -1, "tv": -1, "csrf_token": ""}
+            Params = json.dumps(Params)
+            Params = self.KeyCreator.GetParams(Params)
+            Response = requests.post(self.LyricUrl, data=Params, headers=self.__Headers)
+            JsonData = Response.json()
+            if JsonData["code"] != 200:
+                raise Exception()
+            if JsonData.get("nolyric"):
+                OneMusic.Lyrics = "[00:00.00]纯音乐，请欣赏。"
+            else:
+                OneMusic.Lyrics = JsonData['lrc']['lyric']
+        except Exception:
+            OneMusic.Lyrics = "[00:00.00]纯音乐，请欣赏。"
+        finally:
+            return None
+
+    def __GetMusicSource(self, OneMusic, MusicId):
+        OneMusic: KuGou.Music
+        try:
+            Params = {"ids": [int(MusicId)], "br": 128000, "csrf_token": ""}
+            Params = json.dumps(Params)
+            Params = self.KeyCreator.GetParams(Params)
+            Response = requests.post(self.MusicSourceUrl, data=Params, headers=self.__Headers)
+            JsonData = Response.json()
+            OneMusic.MusicSource = JsonData['data'][0]['url']
+        except Exception:
+            pass
+        finally:
+            return None
 
     def __SetMusicName(self, MusicName):
         if not isinstance(MusicName, str):
@@ -94,4 +119,4 @@ class MusicList(object):
         self.__SetMusicName(MusicName)
         self.__GetResponse()
         self.__CleanData()
-        return None
+        return self.__CleanedData
