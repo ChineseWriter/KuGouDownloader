@@ -26,6 +26,8 @@ del File
 from KuGou.Tools import Music
 from KuGou.Tools import MusicList
 
+from KuGou.Tools import CheckMusic
+
 from KuGou import Requirement
 from KuGou import Tools
 

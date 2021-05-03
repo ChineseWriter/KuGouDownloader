@@ -14,4 +14,6 @@ def Selector(MusicList: list):
     return Buffer
 
 
-KuGou.Download(input("Music name : "), FilePath="./Music", LrcFile=True, DebugFlag=True, Selector=Selector)
+# KuGou.Download(input("Music name : "), FilePath="./Music", LrcFile=True, DebugFlag=True, Selector=Selector)
+Check = KuGou.CheckMusic("./Music")
+Check.DeleteVIPMusic(DebugFlag=True)
