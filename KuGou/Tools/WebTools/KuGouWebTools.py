@@ -171,16 +171,12 @@ class MusicList(object):
         """
         Buffer = []  # 初始化临时存储列表
         for OneSongInfo in Data:  # 遍历每个歌曲及其数据
-            Buffer.append(
-                {
-                    "AlbumID": OneSongInfo["AlbumID"],  # 获取专辑ID
-                    "FileHash": OneSongInfo["FileHash"],  # 获取文件哈希值
-                    "FileName": OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "").replace("/",
-                                                                                                         "-").replace(
-                        "\\", "-"),  # 获取歌曲名
-                    "From": "KuGou"  # 打上KuGou标识
-                }
-            )
+            OneMusic = KuGou.Music()
+            OneMusic.AlbumID = OneSongInfo["AlbumID"]  # 获取歌曲所属专辑的ID
+            OneMusic.FileHash = OneSongInfo["FileHash"]  # 获取歌曲的哈希值
+            Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
+            OneMusic.Name = Name.replace("/", "-").replace("\\", "-")  # 获取歌曲的名字
+            Buffer.append(OneMusic)  # 添加歌曲至列表中
         return Buffer
 
     def GetMusicList(self) -> list:
@@ -214,25 +210,54 @@ class MusicInfo(object):
         :param AlbumID: 歌曲所属专辑的ID
         :param FileHash: 歌曲的哈希值
         """
+        # 必要类型检查
         assert isinstance(AlbumID, str)
         assert isinstance(FileHash, str)
+        # 设置基本时间戳
         self.__TimeStamp = int(time.time() * 1000)
+        # 设置存放网络请求负载数据的容器
         self.__Params = {}
+        # 设置文件的专辑编号和哈希值
         self.__AlbumID = AlbumID
         self.__FileHash = FileHash
 
     def SetRequirements(self, AlbumID: str, FileHash: str) -> None:
+        """设置该类获取歌曲信息时必要的相关信息
+
+        设置歌曲在酷狗上的专辑编号，歌曲在酷狗上的文件哈希值。
+
+        ::Usage:
+            >>>OldAlbumId = "37188454"
+            >>>OldFileHash = "B2BC0EB8553B0EB70B66B950FC3AD287"
+            >>>NewAlbumId = ""
+            >>>NewFileHash = "3A5D1D6FD93B64B5A270042FFE006EBC"
+            >>>MusicInfo(OldAlbumId, OldFileHash).SetRequirements(NewAlbumId, NewFileHash)
+
+        :param AlbumID: 歌曲在酷狗官网上的专辑编号
+        :param FileHash: 歌曲在酷狗官网上的文件哈希值
+        :return: 该方法无返回值。
+        """
+        # 必要类型检查
         assert isinstance(AlbumID, str)
         assert isinstance(FileHash, str)
+        # 设置文件的专辑编号和哈希值
         self.__AlbumID = AlbumID
         self.__FileHash = FileHash
         return None
 
     def __SetTimeStamp(self) -> int:
+        """设置网络请求的时间戳
+
+        :return: 返回设置的时间戳
+        """
         self.__TimeStamp = int(time.time() * 1000)
         return self.__TimeStamp
 
     def __CreateParams(self) -> dict:
+        """创建网络请求必要的负载
+
+        :return: 返回创建的负载数据
+        """
         self.__Params = {
             "r": "play/getdata",
             "callback": "jQuery19100824172432511463_1612781797757",

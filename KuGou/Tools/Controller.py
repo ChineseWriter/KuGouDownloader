@@ -17,13 +17,19 @@ def GetMusicList(MusicName: str) -> list:
     :return: 歌曲列表，为list类型
     """
     assert isinstance(MusicName, str)
-    Creator = KuGou.Tools.KuGouMusicList(MusicName)
-    return Creator.GetMusicList()
+    Creator1 = KuGou.Tools.KuGouMusicList(MusicName)
+    Creator2 = KuGou.Tools.WangYiYunMusicList()
+    MusicList = Creator1.GetMusicList() + Creator2.GetMusicList(MusicName)
+    return MusicList
 
 
-def GetMusicInfo(AlbumID: str, FileHash: str):  # -> KuGou.Music:
+def GetMusicInfo(MusicItem):  # -> KuGou.Music:
     """获取歌曲的相关数据"""
-    assert isinstance(AlbumID, str)
-    assert isinstance(FileHash, str)
-    Got = KuGou.Tools.KuGouMusicInfo(AlbumID, FileHash)
+    MusicItem: KuGou.Music()
+    if MusicItem.From == KuGou.Music.From_KuGou:
+        Got = KuGou.Tools.KuGouMusicInfo(MusicItem.AlbumID, MusicItem.FileHash)
+    elif MusicItem.From == KuGou.Music.From_WangYiYun:
+        Got = KuGou.Tools.WangYiYunMusicInfo(MusicItem.FileId)
+    else:
+        return None
     return Got.GetMusicInfo()

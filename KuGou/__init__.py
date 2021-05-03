@@ -23,8 +23,6 @@ with open("./KuGou/README.md", "r", encoding="UTF-8") as File:
     Describe = File.read()
 del File
 
-from KuGou.Exceptions import KuGouException
-
 from KuGou.Tools import Music
 from KuGou.Tools import MusicList
 

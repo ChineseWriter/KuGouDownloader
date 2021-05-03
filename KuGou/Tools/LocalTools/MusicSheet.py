@@ -60,6 +60,12 @@ class MusicItem(object):
         self.__FileHash = FileHash
         self.__AlbumID = AlbumID
 
+    def __str__(self):
+        return self.AuthorName + " - " + self.Name
+
+    def __repr__(self):
+        return "<MusicItem Object; Music Name: " + self.Name + ">"
+
     @property
     def Name(self) -> str:
         return self.__Name
@@ -206,7 +212,7 @@ class MusicItem(object):
 
     @FileHash.setter
     def FileHash(self, FileHash: str = ""):
-        assert isinstance(FileHash)
+        assert isinstance(FileHash, str)
         self.__FileHash = FileHash
 
     @property
@@ -361,6 +367,13 @@ class MusicSheet(object):
                     break
             else:
                 self.__MusicList.append(Music)
+        if Music.From == MusicItem.From_WangYiYun:
+            for OneMusic in self.__MusicList:
+                OneMusic: MusicItem
+                if OneMusic.FileId == Music.FileId:
+                    break
+            else:
+                self.__MusicList.append(Music)
         return None
 
     def AllItem(self):
@@ -414,6 +427,8 @@ class MusicSheet(object):
             i: MusicItem
             if i.From == MusicItem.From_KuGou:
                 Buffer.append({"From": i.From, "FileHash": i.FileHash, "AlbumID": i.AlbumID, "MusicName": i.Name})
+            elif i.From == MusicItem.From_WangYiYun:
+                Buffer.append({"From": i.From, "FileId": i.FileId, "MusicName": i.Name})
         Object["Musics"] = Buffer
         with open(Path, "w", encoding="UTF-8") as File:
             json.dump(Object, File)
@@ -457,5 +472,9 @@ class MusicSheet(object):
             if OneMusic["From"] == MusicItem.From_KuGou:
                 OneMusic = MusicItem(Name=OneMusic["MusicName"], FileHash=OneMusic["FileHash"], From=OneMusic["From"],
                                      AlbumID=OneMusic["AlbumID"])
-                self.__MusicList.append(OneMusic)
+            elif OneMusic["From"] == MusicItem.From_WangYiYun:
+                OneMusic = MusicItem(Name=OneMusic["MusicName"], FileId=OneMusic["FileId"], From=OneMusic["From"])
+            else:
+                OneMusic = MusicItem()
+            self.__MusicList.append(OneMusic)
         return None

@@ -1,10 +1,17 @@
 # coding = UTF-8
 
 
-from KuGou.Tools.WebTools import WangYiYunMusicList as ML
+import KuGou
 
-Result1 = ML()
-# Result2 = Result1.GetMusicList("所念皆星河 CMJ")
-Result2 = Result1.GetMusicList("大鱼 周深")
-for i in Result2:
-    print(i.Name)
+
+def Selector(MusicList: list):
+    Buffer = None
+    for i in MusicList:
+        i: KuGou.Music
+        if i.From == KuGou.Music.From_WangYiYun:
+            Buffer = i
+            break
+    return Buffer
+
+
+KuGou.Download(input("Music name : "), FilePath="./Music", LrcFile=True, DebugFlag=True, Selector=Selector)

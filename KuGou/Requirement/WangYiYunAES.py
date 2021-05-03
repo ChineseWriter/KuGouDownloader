@@ -26,7 +26,12 @@ class AESKey:
         return {'params': params, 'encSecKey': encSecKey}
 
     def __CreateParams(self, data, key):
-        ''' 获得params,加密字符长度要是16的倍数 :param data: :param key: :return: '''
+        '''获得params,加密字符长度要是16的倍数
+
+        :param data:
+        :param key:
+        :return:
+        '''
         iv = '0102030405060708'
         num = 16 - len(data) % 16
         data = data + num * chr(num)  # 补足
