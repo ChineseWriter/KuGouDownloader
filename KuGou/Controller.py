@@ -19,25 +19,7 @@ def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = ".
         Counter += 1
         if DebugFlag:
             print(f"This is the {Counter} Item .")
-            print("The basic information of the music :")
-            print(f"\tName: {OneMusic.Name}")
-        try:
-            Result = KuGou.Tools.GetMusicInfo(OneMusic)
-            if DebugFlag:
-                print("\tSuccessful !")
-        except Exception:
-            if DebugFlag:
-                print("\tFailed !")
-            continue
-        Result.Save(FilePath, LrcFile, ForceReplace)
-        if DebugFlag:
-            print("The details of this song :")
-            print(f"\tName: {Result.Name}")
-            print(f"\tAlbum: {Result.Album}")
-            print(f"\tAuthor: {Result.AuthorName}")
-            print(f"\tSong Source: {Result.MusicSource}")
-            print(f"\tFrom: {Result.From}")
-            print("\n")
+        DownloadMusic(OneMusic, FilePath, ForceReplace, DebugFlag, LrcFile)
     return None
 
 
@@ -59,17 +41,49 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
     Result = KuGou.Tools.GetMusicList(MusicName)
     Result = Selector(Result)
     if not isinstance(Result, KuGou.Music):
-        raise ValueError("The return value of the Function 'Selector' is incorrect .")
-    if not (Result.FileHash or Result.FileId) and Result.Name:
-        raise ValueError("The return value of the Function 'Selector' is incorrect .")
-    if not Result.AlbumID:
-        Result.AlbumID = ""
+        if not isinstance(Result, list):
+            raise ValueError("The return value of the Function 'Selector' is incorrect .")
+    if isinstance(Result, KuGou.Music):
+        if not (Result.FileHash or Result.FileId) and Result.Name:
+            raise ValueError("The return value of the Function 'Selector' is incorrect .")
+        Result = DownloadMusic(Result, FilePath, ForceReplace, DebugFlag, LrcFile)
+    else:
+        Result: list
+        Buffer = []
+        Counter = 0
+        for i in Result:
+            i: KuGou.Music
+            Counter += 1
+            if not (i.FileHash or i.FileId) and i.Name:
+                raise ValueError("The return value of the Function 'Selector' is incorrect .")
+            if DebugFlag:
+                print(f"This is the {Counter} Item .")
+            Buffer.append(DownloadMusic(i, FilePath, ForceReplace, DebugFlag, LrcFile))
+        Result = Buffer
+    Musics = KuGou.MusicList()
+    Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
+    if isinstance(Result, KuGou.Music):
+        Musics.Append(Result)
+    else:
+        for i in Result:
+            Musics.Append(i)
+    Musics.Save(KuGou.MusicList.Json, MusicSheetPath)
+    return None
+
+
+def DownloadMusic(MusicItem: KuGou.Music, FilePath: str = "./", ForceReplace: bool = False, DebugFlag: bool = False,
+                  LrcFile: bool = True):
     if DebugFlag:
         print("The basic information of the music :")
-        print(f"\tName: {Result.Name}")
+        print(f"\tName: {MusicItem.Name}")
     if DebugFlag:
         print("Ready to download . . .", end="")
-    Result = KuGou.Tools.GetMusicInfo(Result)
+    try:
+        Result = KuGou.Tools.GetMusicInfo(MusicItem)
+    except Exception as AllError:
+        if DebugFlag:
+            print(f"Failed : {repr(AllError)}")
+        return None
     Result.Save(FilePath, LrcFile, ForceReplace)
     if DebugFlag:
         print(" Successful !")
@@ -80,8 +94,4 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         print(f"\tAuthor: {Result.AuthorName}")
         print(f"\tSong Source: {Result.MusicSource}")
         print(f"\tFrom: {Result.From}")
-    Musics = KuGou.MusicList()
-    Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
-    Musics.Append(Result)
-    Musics.Save(KuGou.MusicList.Json, MusicSheetPath)
-    return None
+    return Result

@@ -43,13 +43,13 @@ class MusicItem(object):
         assert isinstance(Album, str)
         assert isinstance(FileHash, str)
         assert isinstance(AlbumID, str)
-        self.__Name = Name
+        self.__Name = Name.replace("/", "").replace("\\", "")
         self.__From = From
         self.__MusicSource = MusicSource
         self.__MusicObject = MusicObject
         self.__FileId = FileId
         self.__AuthorId = AuthorId
-        self.__AuthorName = AuthorName
+        self.__AuthorName = AuthorName.replace("/", "").replace("\\", "")
         self.__PictureSource = PictureSource
         self.__Picture = Picture
         self.__AuthorPictureSource = AuthorPictureSource
@@ -61,7 +61,10 @@ class MusicItem(object):
         self.__AlbumID = AlbumID
 
     def __str__(self):
-        return self.AuthorName + " - " + self.Name
+        if self.AuthorName:
+            return self.AuthorName + " - " + self.Name
+        else:
+            return "未知歌手 - " + self.Name
 
     def __repr__(self):
         return "<MusicItem Object; Music Name: " + self.Name + ">"
@@ -73,7 +76,7 @@ class MusicItem(object):
     @Name.setter
     def Name(self, Name: str = ""):
         assert isinstance(Name, str)
-        self.__Name = Name
+        self.__Name = Name.replace("/", "").replace("\\", "")
 
     @property
     def From(self) -> str:
@@ -128,7 +131,7 @@ class MusicItem(object):
     @AuthorName.setter
     def AuthorName(self, AuthorName: str = ""):
         assert isinstance(AuthorName, str)
-        self.__AuthorName = AuthorName
+        self.__AuthorName = AuthorName.replace("/", "").replace("\\", "")
 
     @property
     def PictureSource(self) -> str:
