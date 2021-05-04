@@ -5,5 +5,8 @@ import KuGou
 
 # KuGou.Download(input("Music name : "), FilePath="./Music", LrcFile=True, DebugFlag=True)
 KuGou.ReDownload(FilePath="./Music", LrcFile=True, DebugFlag=True)
+Check = KuGou.CheckMusic()
+Check.DeleteVIPMusic(DebugFlag=True)
+Check.DeleteTooShortMusic(DebugFlag=True)
 
 input("Finish .")

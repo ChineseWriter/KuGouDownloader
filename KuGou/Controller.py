@@ -9,6 +9,13 @@ import KuGou
 
 def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
                LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False) -> None:
+    try:
+        os.mkdir(FilePath)
+        if DebugFlag:
+            print("Create music file folder successfully .")
+    except FileExistsError:
+        if DebugFlag:
+            print("The music file folder has been created .")
     Musics = KuGou.MusicList()
     Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
     if DebugFlag:
