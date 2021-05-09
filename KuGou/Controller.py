@@ -56,6 +56,8 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         Result = DownloadMusic(Result, FilePath, ForceReplace, DebugFlag, LrcFile)
     else:
         Result: list
+        if not len(Result):
+            return None
         Buffer = []
         Counter = 0
         for i in Result:

@@ -62,6 +62,10 @@ class MusicList(object):
             OneMusicInfo.From = KuGou.Music.From_WangYiYun
             OneMusicInfo.Name = OneMusic["name"]
             OneMusicInfo.FileId = OneMusic["id"]
+            Author = ""
+            for i in OneMusic["ar"]:
+                Author = Author + i["name"] + "、"
+            OneMusicInfo.AuthorName = Author.rstrip("、")
             Buffer.append(OneMusicInfo)
         self.__CleanedData = Buffer
         return None
