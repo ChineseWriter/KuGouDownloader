@@ -45,6 +45,8 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         Selector = lambda x: x[0]
     if not inspect.isfunction(Selector):
         raise ValueError("The Argument 'Selector' must be a function (Executable) .")
+    if not MusicName:
+        return None
     Result = KuGou.Tools.GetMusicList(MusicName)
     Result = Selector(Result)
     if not isinstance(Result, KuGou.Music):

@@ -15,13 +15,19 @@ Headers = [
     },
 ]
 Supported = ["KuGou", "WangYiYun"]
-Require = os.path.abspath("./KuGou/KuGouRequirement.txt")
-Logo = os.path.abspath("./KuGou/logo.ico")
+try:
+    Require = os.path.abspath("./KuGou/KuGouRequirement.txt")
+    Logo = os.path.abspath("./KuGou/logo.ico")
+except FileNotFoundError:
+    pass
 Version = "1.0.1"
 
-with open("./KuGou/README.md", "r", encoding="UTF-8") as File:
-    Describe = File.read()
-del File
+try:
+    with open("./KuGou/README.md", "r", encoding="UTF-8") as File:
+        Describe = File.read()
+    del File
+except FileNotFoundError:
+    pass
 
 from KuGou.Tools import Music
 from KuGou.Tools import MusicList

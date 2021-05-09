@@ -9,10 +9,19 @@ from KuGou.Requirement.KuGouJavaScript import Key, GetSign, GetSignFunction
 from KuGou.Requirement.WangYiYunAES import AESKey
 
 # 导入必需的第三方库列表
-with open("./KuGou/Requirement/KuGouRequirement.txt", "r", encoding="UTF-8") as File:
-    KuGouRequirements = File.read()  # 此数据是文本(字符串)数据
+try:
+    with open("./KuGou/Requirement/KuGouRequirement.txt", "r", encoding="UTF-8") as File:
+        KuGouRequirements = File.read()  # 此数据是文本(字符串)数据
+except FileNotFoundError:
+    pass
 # 导入酷狗音乐的Logo(标识)
-with open("./KuGou/Requirement/logo.ico", "rb") as File:
-    KuGouLogo = File.read()  # 此数据是二进制数据
+try:
+    with open("./KuGou/Requirement/logo.ico", "rb") as File:
+        KuGouLogo = File.read()  # 此数据是二进制数据
+except FileNotFoundError:
+    pass
 
-del File  # 删除该变量，防止误用
+try:
+    del File  # 删除该变量，防止误用
+except NameError:
+    pass
