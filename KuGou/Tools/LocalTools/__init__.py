@@ -1,4 +1,5 @@
 # coding = UTF-8
+"""导入本地文件管理需要的包"""
 
 
 from KuGou.Tools.LocalTools.MusicSheet import MusicItem, MusicSheet

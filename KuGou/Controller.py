@@ -42,7 +42,9 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
     if Selector is None:
         if DebugFlag:
             print("The default song selector will be used .")
-        Selector = lambda x: x[0]
+
+        def Selector(x):
+            return x[0]
     if not inspect.isfunction(Selector):
         raise ValueError("The Argument 'Selector' must be a function (Executable) .")
     if not MusicName:
@@ -102,7 +104,7 @@ def DownloadMusic(MusicItem: KuGou.Music, FilePath: str = "./", ForceReplace: bo
         print("The details of this song :")
         print(f"\tName: {Result.Name}")
         print(f"\tAlbum: {Result.Album}")
-        print(f"\tAuthor: {Result.AuthorName}")
+        print(f"\tAuthor: {Result.Author.Name}")
         print(f"\tSong Source: {Result.MusicSource}")
         print(f"\tFrom: {Result.From}")
     return Result

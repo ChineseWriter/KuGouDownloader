@@ -19,19 +19,19 @@ class AESKey:
         self.first_key = '0CoJUm6Qyw8W8jud'
 
     def GetParams(self, MusicName):
-        ''' 获取加密的参数 params是两次加密的 :param song: :return: '''
+        """ 获取加密的参数 params是两次加密的 :param song: :return: """
         res = self.__CreateParams(MusicName, self.first_key)
         params = self.__CreateParams(res, self.i)
         encSecKey = self.__CreateKey()
         return {'params': params, 'encSecKey': encSecKey}
 
     def __CreateParams(self, data, key):
-        '''获得params,加密字符长度要是16的倍数
+        """获得params,加密字符长度要是16的倍数
 
         :param data:
         :param key:
         :return:
-        '''
+        """
         iv = '0102030405060708'
         num = 16 - len(data) % 16
         data = data + num * chr(num)  # 补足
@@ -41,10 +41,10 @@ class AESKey:
         return result_str
 
     def __CreateKey(self):
-        ''' 获取encSecKey，256个字符串
+        """ 获取encSecKey，256个字符串
         hexlify--->转换为bytes类型
         pow--->两个参数是幂,三个参数是先幂在取余
-        format(rs, 'x').zfill(256)-->256位的16进制 :return: '''
+        format(rs, 'x').zfill(256)-->256位的16进制 :return: """
         enc_key = '010001'
         modulus = '00e0b509f6259df8642dbc35662901477df22677ec152b5ff68ace' \
                   '615bb7b725152b3ab17a876aea8a5aa76d2e417629ec4ee341f56135fccf695' \

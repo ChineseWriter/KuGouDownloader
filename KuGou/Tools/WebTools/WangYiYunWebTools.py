@@ -2,10 +2,9 @@
 
 
 import json
-import re
 
 import requests
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup as Bs
 
 from KuGou.Requirement import AESKey
 
@@ -65,7 +64,7 @@ class MusicList(object):
             Author = ""
             for i in OneMusic["ar"]:
                 Author = Author + i["name"] + "、"
-            OneMusicInfo.AuthorName = Author.rstrip("、")
+            OneMusicInfo.Author.Name = Author.rstrip("、")
             Buffer.append(OneMusicInfo)
         self.__CleanedData = Buffer
         return None
@@ -105,7 +104,7 @@ class MusicInfo(object):
 
     def GetBasicInfo(self):
         Response = requests.get(self.SongDetailUrl, params={"id": self.__Id}, headers=self.__Headers)
-        Html = bs(Response.text, "lxml")
+        Html = Bs(Response.text, "lxml")
         DetailsDiv = Html.find("div", attrs={"class": "cnt"})
         MusicName = DetailsDiv.find("em", attrs={"class": "f-ff2"}).text
         if not MusicName:
@@ -114,19 +113,19 @@ class MusicInfo(object):
                 raise Exception()
         self.__Music.Name = MusicName
         AlbumAndAuthor = DetailsDiv.find_all("a", attrs={"class": "s-fc7"})
-        AuthorInfo: bs = AlbumAndAuthor[0]
-        AlbumInfo: bs = AlbumAndAuthor[1]
+        AuthorInfo: Bs = AlbumAndAuthor[0]
+        AlbumInfo: Bs = AlbumAndAuthor[1]
         AuthorName = AuthorInfo.text
         if not AuthorName:
             AuthorName = AuthorInfo.get_text()
             if not AuthorName:
                 raise Exception()
-        self.__Music.AuthorName = AuthorName
+        self.__Music.Author.Name = AuthorName
         AuthorId = AuthorInfo.get("href") or ""
         if AuthorId:
             AuthorId = AuthorId.split("=")[1]
             if AuthorId.isdigit():
-                self.__Music.AuthorId = int(AuthorId)
+                self.__Music.Author.Id = int(AuthorId)
         AlbumName = AlbumInfo.text
         if not AlbumName:
             AlbumName = AlbumInfo.get_text()
@@ -137,9 +136,9 @@ class MusicInfo(object):
             if AlbumId.isdigit():
                 self.__Music.AlbumID = AlbumId
         Response = requests.get(self.AlbumUrl, params={"id": self.__Music.AlbumID}, headers=self.__Headers)
-        self.__Music.PictureSource = bs(Response.text, "lxml").find("img", attrs={"class": "j-img"})["data-src"]
-        Response = requests.get(self.AuthorUrl, params={"id": self.__Music.AuthorId}, headers=self.__Headers)
-        self.__Music.AuthorPictureSource = bs(Response.text, "lxml").find("meta", attrs={"property": "og:image"})[
+        self.__Music.PictureSource = Bs(Response.text, "lxml").find("img", attrs={"class": "j-img"})["data-src"]
+        Response = requests.get(self.AuthorUrl, params={"id": self.__Music.Author.Id}, headers=self.__Headers)
+        self.__Music.Author.PictureSource = Bs(Response.text, "lxml").find("meta", attrs={"property": "og:image"})[
             "content"]
         return None
 

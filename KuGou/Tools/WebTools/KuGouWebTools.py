@@ -164,7 +164,7 @@ class MusicList(object):
         作为列表的一个元素，返回每个歌曲操作后的结果。
 
         ::Usage:
-            >>>MusicList.CleanData(dict())
+            >>>MusicList.CleanData(list())
 
         :param Data: 获取的数据
         :return: 每个歌曲的结果，为list类型。
@@ -177,7 +177,7 @@ class MusicList(object):
             Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
             OneMusic.Name = Name.replace("/", "-").replace("\\", "-")  # 获取歌曲的名字
             SingerName = OneSongInfo["SingerName"].replace("<em>", "").replace("</em>", "")
-            OneMusic.AuthorName = SingerName.replace("/", "-").replace("\\", "-")
+            OneMusic.Author.Name = SingerName.replace("/", "-").replace("\\", "-")
             Buffer.append(OneMusic)  # 添加歌曲至列表中
         return Buffer
 
@@ -292,7 +292,7 @@ class MusicInfo(object):
         if Data["have_album"] == 1:
             OneMusic.Album = Data["album_name"]
         OneMusic.PictureSource = Data["img"]
-        OneMusic.AuthorName = Data["author_name"]
+        OneMusic.Author.Name = Data["author_name"]
         OneMusic.Lyrics = Data["lyrics"]
         if Data.get("play_url") is not None:
             OneMusic.MusicSource = Data.get("play_url")
@@ -302,9 +302,9 @@ class MusicInfo(object):
             else:
                 return KuGou.Music()
         try:
-            OneMusic.AuthorPictureSource = Data["authors"][0]["avatar"]
+            OneMusic.Author.PictureSource = Data["authors"][0]["avatar"]
         except KeyError:
-            OneMusic.AuthorPictureSource = "https://www.kugou.com/yy/static/images/play/default.jpg"
+            OneMusic.Author.PictureSource = "https://www.kugou.com/yy/static/images/play/default.jpg"
         OneMusic.ReloadInfo()
         String = re.match("(.*?)( - )(.*?)(-)", Data["audio_name"] + "-")
         if String:

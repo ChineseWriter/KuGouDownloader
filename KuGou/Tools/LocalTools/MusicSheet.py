@@ -16,13 +16,61 @@ import KuGou
 VERSION = "1.0.0"
 
 
+class MusicAuthor(object):
+    def __init__(self, Name: str = "", Id: str = "", PictureSource: str = "", Picture: bytes = b""):
+        assert isinstance(Name, str)
+        assert isinstance(Id, str)
+        assert isinstance(PictureSource, str)
+        assert isinstance(Picture, bytes)
+        self.__Name = Name
+        self.__Id = Id
+        self.__PictureSource = PictureSource
+        self.__Picture = Picture
+
+    @property
+    def Name(self):
+        return self.__Name
+
+    @Name.setter
+    def Name(self, Name: str = ""):
+        assert isinstance(Name, str)
+        self.__Name = Name
+
+    @property
+    def Id(self):
+        return self.__Id
+
+    @Id.setter
+    def Id(self, Id: str = ""):
+        assert isinstance(Id, str)
+        self.__Id = Id
+
+    @property
+    def PictureSource(self):
+        return self.__PictureSource
+
+    @PictureSource.setter
+    def PictureSource(self, PictureSource):
+        assert isinstance(PictureSource, str)
+        self.__PictureSource = PictureSource
+
+    @property
+    def Picture(self):
+        return self.__Picture
+
+    @Picture.setter
+    def Picture(self, Picture):
+        assert isinstance(Picture, bytes)
+        self.__Picture = Picture
+
+
 class MusicItem(object):
     __Supported = KuGou.Supported
     From_KuGou = "KuGou"
     From_WangYiYun = "WangYiYun"
 
     def __init__(self, Name: str = "", From: str = "KuGou", AuthorName: str = "", MusicSource: str = "",
-                 MusicObject: bytes = b"", FileId: int = 0, AuthorId: int = 0,
+                 MusicObject: bytes = b"", FileId: int = 0, AuthorId: str = "",
                  PictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg", Picture: bytes = b"",
                  AuthorPictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg",
                  AuthorPicture: bytes = b"", Lyrics: str = "[00:00.00]纯音乐，请欣赏。", Album: str = "", FileHash: str = "",
@@ -33,7 +81,7 @@ class MusicItem(object):
         assert isinstance(MusicSource, str)
         assert isinstance(MusicObject, bytes)
         assert isinstance(FileId, int)
-        assert isinstance(AuthorId, int)
+        assert isinstance(AuthorId, str)
         assert isinstance(AuthorName, str)
         assert isinstance(PictureSource, str)
         assert isinstance(Picture, bytes)
@@ -43,31 +91,35 @@ class MusicItem(object):
         assert isinstance(Album, str)
         assert isinstance(FileHash, str)
         assert isinstance(AlbumID, str)
+        self.__Author = MusicAuthor()
         self.__Name = Name.replace("/", "").replace("\\", "")
         self.__From = From
         self.__MusicSource = MusicSource
         self.__MusicObject = MusicObject
         self.__FileId = FileId
-        self.__AuthorId = AuthorId
-        self.__AuthorName = AuthorName.replace("/", "").replace("\\", "")
+        self.__Author.Id = AuthorId
+        self.__Author.PictureSource = AuthorPictureSource
+        self.__Author.Picture = AuthorPicture
+        self.__Author.Name = AuthorName.replace("/", "").replace("\\", "")
         self.__PictureSource = PictureSource
         self.__Picture = Picture
-        self.__AuthorPictureSource = AuthorPictureSource
-        self.__AuthorPicture = AuthorPicture
-        self.__Lyrics = ""
+        self.__Lyrics = "[00:00.00]纯音乐，请欣赏。"
         self.__LoadLyrics(Lyrics)
         self.__Album = Album
         self.__FileHash = FileHash
         self.__AlbumID = AlbumID
 
     def __str__(self):
-        if self.AuthorName:
-            return self.AuthorName + " - " + self.Name
+        if self.__Author.Name:
+            return self.__Author.Name + " - " + self.Name
         else:
             return "未知歌手 - " + self.Name
 
     def __repr__(self):
-        return "<MusicItem Object; Music Name: " + self.Name + ">"
+        if self.__Author.Name:
+            return "<MusicItem Object; Music Name: " + self.Name + "; Music Author Name: " + self.__Author.Name + ">"
+        else:
+            return "<MusicItem Object; Music Name: " + self.Name + ">"
 
     @property
     def Name(self) -> str:
@@ -116,22 +168,8 @@ class MusicItem(object):
         self.__FileId = FileId
 
     @property
-    def AuthorId(self):
-        return self.__AuthorId
-
-    @AuthorId.setter
-    def AuthorId(self, AuthorId: int = 0):
-        assert isinstance(AuthorId, int)
-        self.__AuthorId = AuthorId
-
-    @property
-    def AuthorName(self) -> str:
-        return self.__AuthorName
-
-    @AuthorName.setter
-    def AuthorName(self, AuthorName: str = ""):
-        assert isinstance(AuthorName, str)
-        self.__AuthorName = AuthorName.replace("/", "").replace("\\", "")
+    def Author(self) -> MusicAuthor:
+        return self.__Author
 
     @property
     def PictureSource(self) -> str:
@@ -151,24 +189,6 @@ class MusicItem(object):
         assert isinstance(Picture, bytes)
         self.__Picture = Picture
 
-    @property
-    def AuthorPictureSource(self) -> str:
-        return self.__AuthorPictureSource
-
-    @AuthorPictureSource.setter
-    def AuthorPictureSource(self, AuthorPictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg"):
-        assert isinstance(AuthorPictureSource, str)
-        self.__AuthorPictureSource = AuthorPictureSource
-
-    @property
-    def AuthorPicture(self) -> bytes:
-        return self.__AuthorPicture
-
-    @AuthorPicture.setter
-    def AuthorPicture(self, AuthorPicture: bytes = b""):
-        assert isinstance(AuthorPicture, bytes)
-        self.__AuthorPicture = AuthorPicture
-
     def __LoadLyrics(self, Lyrics: str = "") -> None:
         if not Lyrics:
             self.__Lyrics = ""
@@ -179,9 +199,9 @@ class MusicItem(object):
         for Item in Lyrics.split("\n"):
             AppendFlag = False
             TestItem = Item + "##Finish"
-            if re.match(r"(\[\d\d\:\d\d\.\d\d\])(.*?)(##Finish)", TestItem):
+            if re.match(r"(\[\d\d:\d\d\.\d\d])(.*?)(##Finish)", TestItem):
                 AppendFlag = True
-            elif re.match(r"(\[\d\d\:\d\d\.\d\d\d\])(.*?)(##Finish)", TestItem):
+            elif re.match(r"(\[\d\d:\d\d\.\d\d\d])(.*?)(##Finish)", TestItem):
                 AppendFlag = True
             if AppendFlag:
                 Buffer.append(Item)
@@ -196,7 +216,7 @@ class MusicItem(object):
         return copy.deepcopy(self.__Lyrics)
 
     @Lyrics.setter
-    def Lyrics(self, Lyrics: str = ""):
+    def Lyrics(self, Lyrics: str = "[00:00.00]纯音乐，请欣赏。"):
         assert isinstance(Lyrics, str)
         self.__LoadLyrics(Lyrics)
 
@@ -233,7 +253,7 @@ class MusicItem(object):
         except Exception:
             warnings.warn("Reload music object failed .")
         try:
-            self.__AuthorPicture = requests.get(self.__AuthorPictureSource, headers=KuGou.Headers[1]).content
+            self.__Author.Picture = requests.get(self.__Author.PictureSource, headers=KuGou.Headers[1]).content
         except Exception:
             warnings.warn("Reload the picture of author failed .")
         try:
@@ -244,8 +264,8 @@ class MusicItem(object):
 
     def Save(self, Path: str = "./", LrcFile: bool = False, ForceReplace: bool = False) -> None:
         Path = Path.replace("\\", "/").rstrip("/") + "/"
-        MusicFilePath = Path + self.__AuthorName + " - " + self.__Name + ".mp3"
-        LrcFilePath = Path + self.__AuthorName + " - " + self.__Name + ".lrc"
+        MusicFilePath = Path + self.__Author.Name + " - " + self.__Name + ".mp3"
+        LrcFilePath = Path + self.__Author.Name + " - " + self.__Name + ".lrc"
         if LrcFile:
             with open(LrcFilePath, "w", encoding="UTF-8") as File:
                 File.write(self.__Lyrics)
@@ -271,12 +291,12 @@ class MusicItem(object):
         if 59.6 <= Music.info.time_secs <= 60.4:
             warnings.warn("The music might be a VIP music !")
         Music.initTag()
-        Music.tag.Title = self.__Name
-        Music.tag.artist = self.__AuthorName
+        Music.tag.title = self.__Name
+        Music.tag.artist = self.__Author.Name
         Music.tag.images.set(3, self.__Picture, "image/jpeg", "Desc", self.__PictureSource)
         Music.tag.images.set(4, self.__Picture, "image/jpeg", "Desc", self.__PictureSource)
-        if self.__AuthorPicture:
-            Music.tag.images.set(7, self.__AuthorPicture, "image/jpeg", "Desc", self.__AuthorPictureSource)
+        if self.__Author.Picture:
+            Music.tag.images.set(7, self.__Author.Picture, "image/jpeg", "Desc", self.__Author.PictureSource)
         Music.tag.lyrics.set(self.__Lyrics)
         if self.__Album:
             Music.tag.album = self.__Album

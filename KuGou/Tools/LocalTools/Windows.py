@@ -18,7 +18,7 @@ def MusicSelector(Musics):
     List.pack()
     for OneMusic in Musics:
         OneMusic: KuGou.Music
-        List.insert("end", OneMusic.From + ": " + OneMusic.Name + " - " + OneMusic.AuthorName)
+        List.insert("end", OneMusic.From + ": " + OneMusic.Name + " - " + str(OneMusic.Author.Name))
 
     Buffer = []
 
@@ -46,9 +46,10 @@ def MusicNameGainer():
     Entry = tkinter.Entry(Window, width=50, textvariable=EntryVar)
     Entry.pack()
 
-    Text = []
+    Text = [""]
 
     def GetText(event=None):
+        Text.clear()
         Text.append(Entry.get())
         Window.destroy()
 
