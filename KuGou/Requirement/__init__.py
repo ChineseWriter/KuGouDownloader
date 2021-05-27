@@ -4,9 +4,9 @@
 
 
 # 酷狗的签名构造所需数据，包括密钥、JavaScript签名构造函数。
-from KuGou.Requirement.KuGouJavaScript import Key, GetSign, GetSignFunction
+from .KuGouJavaScript import Key, GetSign, GetSignFunction
 # 网易云的密钥构造所需数据，采用AES的CBC模式加密的算法。
-from KuGou.Requirement.WangYiYunAES import AESKey
+from .WangYiYunAES import AESKey
 
 # 导入必需的第三方库列表
 try:

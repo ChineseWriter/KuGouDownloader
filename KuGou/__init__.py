@@ -2,6 +2,7 @@
 
 
 import os
+import sys
 
 Headers = [
     {
@@ -29,12 +30,23 @@ try:
 except FileNotFoundError:
     pass
 
-from KuGou.Tools import Music
-from KuGou.Tools import MusicList
+ModulePath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from KuGou.Tools import CheckMusic
+if ModulePath not in sys.path:
+    sys.path.append(ModulePath)
+    RemoveFlag = True
+else:
+    RemoveFlag = False
+
+from .Tools import Music
+from .Tools import MusicList
+
+from .Tools import CheckMusic
 
 from KuGou import Requirement
 from KuGou import Tools
 
-from KuGou.Controller import Download, ReDownload
+from .Controller import Download, ReDownload
+
+if RemoveFlag:
+    sys.path.remove(ModulePath)
