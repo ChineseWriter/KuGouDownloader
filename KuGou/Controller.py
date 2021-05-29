@@ -71,7 +71,9 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
                 raise ValueError("The return value of the Function 'Selector' is incorrect .")
             if DebugFlag:
                 print(f"This is the {Counter} Item .")
-            Buffer.append(DownloadMusic(i, FilePath, ForceReplace, DebugFlag, LrcFile))
+            SuccessFlag = DownloadMusic(i, FilePath, ForceReplace, DebugFlag, LrcFile)
+            if SuccessFlag:
+                Buffer.append(SuccessFlag)
         Result = Buffer
     Musics = KuGou.MusicList()
     Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
@@ -97,7 +99,11 @@ def DownloadMusic(MusicItem: KuGou.Music, FilePath: str = "./", ForceReplace: bo
         if DebugFlag:
             print(f"Failed : {repr(AllError)}")
         return None
-    Result.Save(FilePath, LrcFile, ForceReplace)
+    SuccessFlag = Result.Save(FilePath, LrcFile, ForceReplace)
+    if not SuccessFlag:
+        if DebugFlag:
+            print("Failed !")
+        return None
     if DebugFlag:
         print(" Successful !")
     if DebugFlag:

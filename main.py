@@ -7,6 +7,7 @@ KuGou.Download(KuGou.Tools.LocalTools.MusicNameGainer(), FilePath="./Music", Lrc
                Selector=KuGou.Tools.LocalTools.MusicSelector)
 # KuGou.ReDownload(FilePath="./Music", LrcFile=True, DebugFlag=True)
 Check = KuGou.CheckMusic()
+Check.DeleteLrcWithoutMusic()
 Check.DeleteVIPMusic(DebugFlag=True)
 Check.DeleteTooShortMusic(DebugFlag=True)
 

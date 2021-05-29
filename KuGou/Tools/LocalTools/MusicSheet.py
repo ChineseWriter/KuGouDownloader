@@ -42,8 +42,8 @@ class MusicAuthor(object):
 
     @Id.setter
     def Id(self, Id: str = ""):
-        assert isinstance(Id, str)
-        self.__Id = Id
+        assert isinstance(Id, str) or isinstance(Id, int)
+        self.__Id = str(Id)
 
     @property
     def PictureSource(self):
