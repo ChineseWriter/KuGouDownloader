@@ -1,6 +1,6 @@
 # coding = UTF-8
 """对所有下载器进行封装，可操作多个网站的数据。"""
-
+import warnings
 
 import KuGou
 
@@ -29,10 +29,11 @@ def GetMusicInfo(MusicItem):  # -> KuGou.Music:
     """获取歌曲的相关数据"""
     MusicItem: KuGou.Music()
     if MusicItem.From == KuGou.Music.From_KuGou:
-        Got = KuGou.Tools.KuGouMusicInfo(MusicItem.AlbumID, MusicItem.FileHash)
+        Got = KuGou.Tools.KuGouMusicInfo(MusicItem)
     elif MusicItem.From == KuGou.Music.From_WangYiYun:
-        Got = KuGou.Tools.WangYiYunMusicInfo(MusicItem.FileId)
+        Got = KuGou.Tools.WangYiYunMusicInfo(MusicItem)
     else:
+        warnings.warn("该网站目前不被支持。")
         return None
     Result = Got.GetMusicInfo()
     return Result

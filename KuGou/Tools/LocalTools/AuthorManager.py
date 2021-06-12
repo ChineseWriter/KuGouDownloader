@@ -39,30 +39,36 @@ class SingerItem(object):
         elif self.__Platform == self.WANGYIYUN:
             self.__LoadInfoFromWangYiYun()
         else:
-            warnings.warn(f"该歌手来源网站目前不被支持。")
+            warnings.warn(f"该歌手({self.__Name})来源网站目前不被支持。")
+            return None
         self.__LoadPicture()
         return None
 
     def __LoadPicture(self):
-        try:
-            for OnePictureSource in self.__PictureSources:
-                OneHeader = Header.GetHeader()
+        for OnePictureSource in self.__PictureSources:
+            OneHeader = Header.GetHeader()
+            try:
                 OneResponse = requests.get(OnePictureSource, headers=OneHeader)
+                assert OneResponse.status_code == 200
+            except Exception:
+                warnings.warn(f"加载歌手({self.__Name})写真失败。")
+                continue
+            else:
                 self.__Pictures.append(OneResponse.content)
-        except Exception:
-            warnings.warn("加载歌手写真失败。")
 
     def __LoadInfoFromKuGou(self):
+        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SONGERINFO)
+        OneUrl = "https://www.kugou.com/singer/" + self.__Id + ".html"
         try:
-            OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SONGERINFO)
-            OneUrl = "https://www.kugou.com/singer/" + self.__Id + ".html"
             OneResponse = requests.get(OneUrl, headers=OneHeader)
+            assert OneResponse.status_code == 200
+        except Exception:
+            warnings.warn(f"加载歌手{self.__Name}简介失败。")
+        else:
             Html = Bs(OneResponse.text, "lxml")
             BufferGroup = Html.find("div", attrs={"class": "intro"})
             self.__Description = BufferGroup.find("p").text
             self.__Name = BufferGroup.find("strong").text
-        except Exception:
-            warnings.warn(f"加载歌手{self.__Name}简介失败。")
         finally:
             return None
 
@@ -78,9 +84,7 @@ class SingerItem(object):
             Html = Bs(OneResponse.text, "lxml")
             self.__Name = Html.find("h2", attrs={"id": "artist-name"}).text
             ImageSource = Html.find("div", attrs={"class": "n-artist f-cb"}).find("img").get("src")
-            OneHeader = Header.GetHeader()
-            OneResponse = requests.get(ImageSource, headers=OneHeader)
-            self.__Pictures.append(OneResponse.content)
+            self.__PictureSources.append(ImageSource)
         except Exception:
             warnings.warn(f"加载歌手{self.__Name}简介或写真失败。")
         finally:

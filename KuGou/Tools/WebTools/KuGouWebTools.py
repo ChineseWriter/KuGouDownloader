@@ -179,8 +179,6 @@ class MusicList(object):
             Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
             OneMusic.Name = Name.replace("/", "-").replace("\\", "-")  # 获取歌曲的名字
             OneMusic.Author.SetNames(OneSongInfo["SingerName"].replace("<em>", "").replace("</em>", ""))
-            for OneSingerId in OneSongInfo["SingerId"]:
-                OneMusic.Author.Append(KuGou.SUPPORTED.KuGou, OneSingerId)
             Buffer.append(OneMusic)  # 添加歌曲至列表中
         return Buffer
 
@@ -204,51 +202,13 @@ class MusicList(object):
 class MusicInfo(object):
     """从酷狗官网获取歌曲相关数据。"""
 
-    def __init__(self, AlbumID: str, FileHash: str) -> None:
-        """初始化该类
-
-        检查两参数是否均为str类型，设置时间戳，创建请求负载数据容器，绑定两参数到类属性。
-
-        ::Usage:
-            >>>var = MusicInfo("4139345", "08519C4B628FCC6292A46A508E11DFA2")
-
-        :param AlbumID: 歌曲所属专辑的ID
-        :param FileHash: 歌曲的哈希值
-        """
-        # 必要类型检查
-        assert isinstance(AlbumID, str)
-        assert isinstance(FileHash, str)
+    def __init__(self, MusicItem) -> None:
         # 设置基本时间戳
         self.__TimeStamp = int(time.time() * 1000)
         # 设置存放网络请求负载数据的容器
         self.__Params = {}
-        # 设置文件的专辑编号和哈希值
-        self.__AlbumID = AlbumID
-        self.__FileHash = FileHash
-
-    def SetRequirements(self, AlbumID: str, FileHash: str) -> None:
-        """设置该类获取歌曲信息时必要的相关信息
-
-        设置歌曲在酷狗上的专辑编号，歌曲在酷狗上的文件哈希值。
-
-        ::Usage:
-            >>>OldAlbumId = "37188454"
-            >>>OldFileHash = "B2BC0EB8553B0EB70B66B950FC3AD287"
-            >>>NewAlbumId = ""
-            >>>NewFileHash = "3A5D1D6FD93B64B5A270042FFE006EBC"
-            >>>MusicInfo(OldAlbumId, OldFileHash).SetRequirements(NewAlbumId, NewFileHash)
-
-        :param AlbumID: 歌曲在酷狗官网上的专辑编号
-        :param FileHash: 歌曲在酷狗官网上的文件哈希值
-        :return: 该方法无返回值。
-        """
-        # 必要类型检查
-        assert isinstance(AlbumID, str)
-        assert isinstance(FileHash, str)
-        # 设置文件的专辑编号和哈希值
-        self.__AlbumID = AlbumID
-        self.__FileHash = FileHash
-        return None
+        MusicItem: KuGou.Music
+        self.__Music = MusicItem
 
     def __SetTimeStamp(self) -> int:
         """设置网络请求的时间戳
@@ -266,11 +226,11 @@ class MusicInfo(object):
         self.__Params = {
             "r": "play/getdata",
             "callback": "jQuery19100824172432511463_1612781797757",
-            "hash": self.__FileHash,
+            "hash": self.__Music.FileHash,
             "dfid": "073Nfk3nSl6t0sst5p3fjWxH",
             "mid": "578a45450e07d9022528599a86a22d26",
             "platid": 4,
-            "album_id": self.__AlbumID,
+            "album_id": self.__Music.AlbumID,
             "_": str(self.__TimeStamp)
         }
         return self.__Params
@@ -289,38 +249,36 @@ class MusicInfo(object):
         Data = Data["data"]
         return Data
 
-    @classmethod
-    def CleanData(cls, Data):  # -> KuGou.Music:
-        OneMusic = KuGou.Music()
-        OneMusic.From = OneMusic.From_KuGou
+    def CleanData(self, Data):
         if Data["have_album"] == 1:
-            OneMusic.Album = Data["album_name"]
-        OneMusic.PictureSource = Data["img"]
+            self.__Music.Album = Data["album_name"]
+        self.__Music.PictureSource = Data["img"]
         for OneSinger in Data["authors"]:
-            OneMusic.Author.Append(
+            self.__Music.Author.Append(
                 KuGou.SUPPORTED.KuGou,
                 OneSinger["author_id"],
                 OneSinger["author_name"],
                 (OneSinger["avatar"],),
                 True
             )
-        OneMusic.Lyrics = Data["lyrics"]
+        self.__Music.Lyrics = Data["lyrics"]
         if Data.get("play_url") is not None:
-            OneMusic.MusicSource = Data.get("play_url")
+            self.__Music.MusicSource = Data.get("play_url")
         else:
             if Data.get("play_backup_url") is not None:
-                OneMusic.MusicSource = Data.get("play_backup_url")
+                self.__Music.MusicSource = Data.get("play_backup_url")
             else:
                 return KuGou.Music()
-        OneMusic.ReloadInfo()
+        self.__Music.ReloadInfo()
         String = re.match("(.*?)( - )(.*?)(-)", Data["audio_name"] + "-")
         if String:
-            OneMusic.Name = String.group(3).replace("/", "-").replace("\\", "-")
+            self.__Music.Name = String.group(3).replace("/", "-").replace("\\", "-")
         else:
-            OneMusic.Name = Data["audio_name"]
-        return OneMusic
+            self.__Music.Name = Data["audio_name"]
+        return None
 
-    def GetMusicInfo(self):  # -> KuGou.Music:
+    def GetMusicInfo(self):
         self.__SetTimeStamp()
         self.__CreateParams()
-        return MusicInfo.CleanData(self.__GetResponse())
+        self.CleanData(self.__GetResponse())
+        return self.__Music

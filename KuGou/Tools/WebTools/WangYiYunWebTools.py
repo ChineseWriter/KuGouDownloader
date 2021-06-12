@@ -2,6 +2,7 @@
 
 
 import json
+import warnings
 
 import requests
 from bs4 import BeautifulSoup as Bs
@@ -93,42 +94,25 @@ class MusicInfo(object):
     MusicSourceUrl = "https://music.163.com/weapi/song/enhance/player/url?csrf_token="
     AuthorUrl = "https://music.163.com/artist"
 
-    def __init__(self, Id: int = 0) -> None:
-        assert isinstance(Id, int)
-        self.__Id = Id
-        self.__Music = KuGou.Music()
-        self.__Music.From = KuGou.Music.From_WangYiYun
-        self.__Music.FileId = Id
+    def __init__(self, MusicItem) -> None:
+        MusicItem: KuGou.Music
+        self.__Music = MusicItem
         self.KeyCreator = AESKey()
 
     def GetBasicInfo(self):
         OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_SEARCH)
-        Response = requests.get(self.SongDetailUrl, params={"id": self.__Id}, headers=OneHeader)
+        Response = requests.get(self.SongDetailUrl, params={"id": self.__Music.FileId}, headers=OneHeader)
         Html = Bs(Response.text, "lxml")
         DetailsDiv = Html.find("div", attrs={"class": "cnt"})
         MusicName = DetailsDiv.find("em", attrs={"class": "f-ff2"}).text
         if not MusicName:
             MusicName = DetailsDiv.find("em", attrs={"class": "f-ff2"}).get_text()
             if not MusicName:
-                raise Exception()
+                warnings.warn("获取歌曲名失败。")
         self.__Music.Name = MusicName
         AlbumAndAuthor = DetailsDiv.find_all("a", attrs={"class": "s-fc7"})
-        AuthorInfo: Bs = AlbumAndAuthor[0]
         AlbumInfo: Bs = AlbumAndAuthor[1]
-        AuthorName = AuthorInfo.text
-        if not AuthorName:
-            AuthorName = AuthorInfo.get_text()
-            if not AuthorName:
-                raise Exception()
-        self.__Music.Author.Name = AuthorName
-        AuthorId = AuthorInfo.get("href") or ""
-        if AuthorId:
-            AuthorId = AuthorId.split("=")[1]
-            if AuthorId.isdigit():
-                self.__Music.Author.Id = int(AuthorId)
         AlbumName = AlbumInfo.text
-        if not AlbumName:
-            AlbumName = AlbumInfo.get_text()
         self.__Music.Album = AlbumName
         AlbumId = AlbumInfo.get("href") or ""
         if AlbumId:
@@ -138,9 +122,7 @@ class MusicInfo(object):
         OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_MAIN)
         Response = requests.get(self.AlbumUrl, params={"id": self.__Music.AlbumID}, headers=OneHeader)
         self.__Music.PictureSource = Bs(Response.text, "lxml").find("img", attrs={"class": "j-img"})["data-src"]
-        Response = requests.get(self.AuthorUrl, params={"id": self.__Music.Author.Id}, headers=OneHeader)
-        self.__Music.Author.PictureSource = Bs(Response.text, "lxml").find("meta", attrs={"property": "og:image"})[
-            "content"]
+        self.__Music.Author.ReLoadInformation()
         return None
 
     def __GetLyrics(self, OneMusic, MusicId):
