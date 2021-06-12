@@ -6,6 +6,8 @@ import os
 # 类中防止错误（主要为误修改）
 import copy
 # MP3文件信息提取
+import warnings
+
 import eyed3
 
 
@@ -75,18 +77,30 @@ class Check(object):
 
     def __CheckVIP(self):
         Buffer = []
-        for i in os.listdir(self.__Path):
-            if os.path.splitext(i)[1] == ".mp3":
-                if 59.5 <= eyed3.load(self.__Path + "/" + i).info.time_secs <= 60.5:
-                    Buffer.append(i)
+        for OneMusicName in os.listdir(self.__Path):
+            if os.path.splitext(OneMusicName)[1] == ".mp3":
+                OneMusicPath = self.__Path + "/" + OneMusicName
+                try:
+                    LoadedMusic = eyed3.load(OneMusicPath)
+                except Exception:
+                    warnings.warn(f"加载歌曲({OneMusicName})失败。")
+                    continue
+                if 59.5 <= LoadedMusic.info.time_secs <= 60.5:
+                    Buffer.append(OneMusicName)
         return Buffer
 
     def __CheckTooShort(self):
         Buffer = []
-        for i in os.listdir(self.__Path):
-            if os.path.splitext(i)[1] == ".mp3":
-                if eyed3.load(self.__Path + "/" + i).info.time_secs <= 59.5:
-                    Buffer.append(i)
+        for OneMusicName in os.listdir(self.__Path):
+            if os.path.splitext(OneMusicName)[1] == ".mp3":
+                OneMusicPath = self.__Path + "/" + OneMusicName
+                try:
+                    LoadedMusic = eyed3.load(OneMusicPath)
+                except Exception:
+                    warnings.warn(f"加载歌曲({OneMusicName})失败。")
+                    continue
+                if LoadedMusic.info.time_secs <= 59.5:
+                    Buffer.append(OneMusicName)
         return Buffer
 
     def __CheckLrcWithoutMusic(self):

@@ -9,6 +9,7 @@ import requests
 import json
 
 import KuGou
+from KuGou.Requirement import Header
 
 
 class MusicList(object):
@@ -141,9 +142,10 @@ class MusicList(object):
 
         :return: 清洗过的结果，为dict类型。
         """
+        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SEARCH)
         Response = requests.get(
             'https://complexsearch.kugou.com/v2/search/song?',
-            headers=KuGou.Headers[0], params=self.__GetData
+            headers=OneHeader, params=self.__GetData
         )  # 获取数据
         String_1 = Response.content.decode('UTF-8')  # 按UTF-8编码解码
         String_2 = String_1[String_1.find('(') + 1:-2]  # 获取可被Json模块解析的内容
@@ -176,8 +178,9 @@ class MusicList(object):
             OneMusic.FileHash = OneSongInfo["FileHash"]  # 获取歌曲的哈希值
             Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
             OneMusic.Name = Name.replace("/", "-").replace("\\", "-")  # 获取歌曲的名字
-            SingerName = OneSongInfo["SingerName"].replace("<em>", "").replace("</em>", "")
-            OneMusic.Author.Name = SingerName.replace("/", "-").replace("\\", "-")
+            OneMusic.Author.SetNames(OneSongInfo["SingerName"].replace("<em>", "").replace("</em>", ""))
+            for OneSingerId in OneSongInfo["SingerId"]:
+                OneMusic.Author.Append(KuGou.SUPPORTED.KuGou, OneSingerId)
             Buffer.append(OneMusic)  # 添加歌曲至列表中
         return Buffer
 
@@ -273,9 +276,10 @@ class MusicInfo(object):
         return self.__Params
 
     def __GetResponse(self) -> dict:
+        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SEARCH)
         Response = requests.get(
             "https://wwwapi.kugou.com/yy/index.php",
-            headers=KuGou.Headers[0], params=self.__Params
+            headers=OneHeader, params=self.__Params
         )
         String_1 = Response.content.decode('utf-8')
         String_2 = String_1[String_1.find('(') + 1:-2]
@@ -292,7 +296,14 @@ class MusicInfo(object):
         if Data["have_album"] == 1:
             OneMusic.Album = Data["album_name"]
         OneMusic.PictureSource = Data["img"]
-        OneMusic.Author.Name = Data["author_name"]
+        for OneSinger in Data["authors"]:
+            OneMusic.Author.Append(
+                KuGou.SUPPORTED.KuGou,
+                OneSinger["author_id"],
+                OneSinger["author_name"],
+                (OneSinger["avatar"],),
+                True
+            )
         OneMusic.Lyrics = Data["lyrics"]
         if Data.get("play_url") is not None:
             OneMusic.MusicSource = Data.get("play_url")
@@ -301,10 +312,6 @@ class MusicInfo(object):
                 OneMusic.MusicSource = Data.get("play_backup_url")
             else:
                 return KuGou.Music()
-        try:
-            OneMusic.Author.PictureSource = Data["authors"][0]["avatar"]
-        except KeyError:
-            OneMusic.Author.PictureSource = "https://www.kugou.com/yy/static/images/play/default.jpg"
         OneMusic.ReloadInfo()
         String = re.match("(.*?)( - )(.*?)(-)", Data["audio_name"] + "-")
         if String:

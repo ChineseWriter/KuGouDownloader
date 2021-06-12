@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup as Bs
 from KuGou.Requirement import AESKey
 
 import KuGou
+from KuGou.Requirement import Header
 
 
 class MusicList(object):
@@ -61,10 +62,13 @@ class MusicList(object):
             OneMusicInfo.From = KuGou.Music.From_WangYiYun
             OneMusicInfo.Name = OneMusic["name"]
             OneMusicInfo.FileId = OneMusic["id"]
-            Author = ""
-            for i in OneMusic["ar"]:
-                Author = Author + i["name"] + "、"
-            OneMusicInfo.Author.Name = Author.rstrip("、")
+            BufferName = ""
+            for OneSinger in OneMusic["ar"]:
+                OneMusicInfo.Author.Append(
+                    KuGou.SUPPORTED.WangYiYun, Id=OneSinger["id"], Name=OneSinger["name"]
+                )
+                BufferName = BufferName + OneSinger["name"] + "、"
+            OneMusicInfo.Author.SetNames(BufferName.rstrip("、"))
             Buffer.append(OneMusicInfo)
         self.__CleanedData = Buffer
         return None
@@ -88,11 +92,6 @@ class MusicInfo(object):
     LyricUrl = "https://music.163.com/weapi/song/lyric?csrf_token="
     MusicSourceUrl = "https://music.163.com/weapi/song/enhance/player/url?csrf_token="
     AuthorUrl = "https://music.163.com/artist"
-    __Headers = {
-        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                      "(KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.68",
-        'Referer': 'https://music.163.com/'
-    }
 
     def __init__(self, Id: int = 0) -> None:
         assert isinstance(Id, int)
@@ -103,7 +102,8 @@ class MusicInfo(object):
         self.KeyCreator = AESKey()
 
     def GetBasicInfo(self):
-        Response = requests.get(self.SongDetailUrl, params={"id": self.__Id}, headers=self.__Headers)
+        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_SEARCH)
+        Response = requests.get(self.SongDetailUrl, params={"id": self.__Id}, headers=OneHeader)
         Html = Bs(Response.text, "lxml")
         DetailsDiv = Html.find("div", attrs={"class": "cnt"})
         MusicName = DetailsDiv.find("em", attrs={"class": "f-ff2"}).text
@@ -135,9 +135,10 @@ class MusicInfo(object):
             AlbumId = AlbumId.split("=")[1]
             if AlbumId.isdigit():
                 self.__Music.AlbumID = AlbumId
-        Response = requests.get(self.AlbumUrl, params={"id": self.__Music.AlbumID}, headers=self.__Headers)
+        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_MAIN)
+        Response = requests.get(self.AlbumUrl, params={"id": self.__Music.AlbumID}, headers=OneHeader)
         self.__Music.PictureSource = Bs(Response.text, "lxml").find("img", attrs={"class": "j-img"})["data-src"]
-        Response = requests.get(self.AuthorUrl, params={"id": self.__Music.Author.Id}, headers=self.__Headers)
+        Response = requests.get(self.AuthorUrl, params={"id": self.__Music.Author.Id}, headers=OneHeader)
         self.__Music.Author.PictureSource = Bs(Response.text, "lxml").find("meta", attrs={"property": "og:image"})[
             "content"]
         return None
@@ -148,7 +149,8 @@ class MusicInfo(object):
             Params = {"id": str(MusicId), "lv": -1, "tv": -1, "csrf_token": ""}
             Params = json.dumps(Params)
             Params = self.KeyCreator.GetParams(Params)
-            Response = requests.post(self.LyricUrl, data=Params, headers=self.__Headers)
+            OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_MAIN)
+            Response = requests.post(self.LyricUrl, data=Params, headers=OneHeader)
             JsonData = Response.json()
             if JsonData["code"] != 200:
                 raise Exception()
@@ -167,7 +169,8 @@ class MusicInfo(object):
             Params = {"ids": [int(MusicId)], "br": 128000, "csrf_token": ""}
             Params = json.dumps(Params)
             Params = self.KeyCreator.GetParams(Params)
-            Response = requests.post(self.MusicSourceUrl, data=Params, headers=self.__Headers)
+            OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_MAIN)
+            Response = requests.post(self.MusicSourceUrl, data=Params, headers=OneHeader)
             JsonData = Response.json()
             OneMusic.MusicSource = JsonData['data'][0]['url']
         except Exception:

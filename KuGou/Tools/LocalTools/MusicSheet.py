@@ -11,69 +11,22 @@ import time
 import eyed3
 import requests
 
+from KuGou.Tools.LocalTools.AuthorManager import SingerList
 import KuGou
+from KuGou.Requirement import Header
 
 VERSION = "1.0.0"
 
 
-class MusicAuthor(object):
-    def __init__(self, Name: str = "", Id: str = "", PictureSource: str = "", Picture: bytes = b""):
-        assert isinstance(Name, str)
-        assert isinstance(Id, str)
-        assert isinstance(PictureSource, str)
-        assert isinstance(Picture, bytes)
-        self.__Name = Name
-        self.__Id = Id
-        self.__PictureSource = PictureSource
-        self.__Picture = Picture
-
-    @property
-    def Name(self):
-        return self.__Name
-
-    @Name.setter
-    def Name(self, Name: str = ""):
-        assert isinstance(Name, str)
-        self.__Name = Name
-
-    @property
-    def Id(self):
-        return self.__Id
-
-    @Id.setter
-    def Id(self, Id: str = ""):
-        assert isinstance(Id, str) or isinstance(Id, int)
-        self.__Id = str(Id)
-
-    @property
-    def PictureSource(self):
-        return self.__PictureSource
-
-    @PictureSource.setter
-    def PictureSource(self, PictureSource):
-        assert isinstance(PictureSource, str)
-        self.__PictureSource = PictureSource
-
-    @property
-    def Picture(self):
-        return self.__Picture
-
-    @Picture.setter
-    def Picture(self, Picture):
-        assert isinstance(Picture, bytes)
-        self.__Picture = Picture
-
-
 class MusicItem(object):
-    __Supported = KuGou.Supported
-    From_KuGou = "KuGou"
-    From_WangYiYun = "WangYiYun"
+    __Supported = KuGou.SUPPORTED.ALL
+    From_KuGou = KuGou.SUPPORTED.KuGou
+    From_WangYiYun = KuGou.SUPPORTED.WangYiYun
 
-    def __init__(self, Name: str = "", From: str = "KuGou", AuthorName: str = "", MusicSource: str = "",
-                 MusicObject: bytes = b"", FileId: int = 0, AuthorId: str = "",
+    def __init__(self, Name: str = "", From: str = "KuGou", MusicSource: str = "",
+                 MusicObject: bytes = b"", FileId: int = 0,
                  PictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg", Picture: bytes = b"",
-                 AuthorPictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg",
-                 AuthorPicture: bytes = b"", Lyrics: str = "[00:00.00]纯音乐，请欣赏。", Album: str = "", FileHash: str = "",
+                 Lyrics: str = "[00:00.00]纯音乐，请欣赏。", Album: str = "", FileHash: str = "",
                  AlbumID: str = "") -> None:
         assert isinstance(Name, str)
         assert isinstance(From, str)
@@ -81,26 +34,18 @@ class MusicItem(object):
         assert isinstance(MusicSource, str)
         assert isinstance(MusicObject, bytes)
         assert isinstance(FileId, int)
-        assert isinstance(AuthorId, str)
-        assert isinstance(AuthorName, str)
         assert isinstance(PictureSource, str)
         assert isinstance(Picture, bytes)
-        assert isinstance(AuthorPictureSource, str)
-        assert isinstance(AuthorPicture, bytes)
         assert isinstance(Lyrics, str)
         assert isinstance(Album, str)
         assert isinstance(FileHash, str)
         assert isinstance(AlbumID, str)
-        self.__Author = MusicAuthor()
+        self.__Author = SingerList()
         self.__Name = Name.replace("/", "").replace("\\", "")
         self.__From = From
         self.__MusicSource = MusicSource
         self.__MusicObject = MusicObject
         self.__FileId = FileId
-        self.__Author.Id = AuthorId
-        self.__Author.PictureSource = AuthorPictureSource
-        self.__Author.Picture = AuthorPicture
-        self.__Author.Name = AuthorName.replace("/", "").replace("\\", "")
         self.__PictureSource = PictureSource
         self.__Picture = Picture
         self.__Lyrics = "[00:00.00]纯音乐，请欣赏。"
@@ -110,16 +55,10 @@ class MusicItem(object):
         self.__AlbumID = AlbumID
 
     def __str__(self):
-        if self.__Author.Name:
-            return self.__Author.Name + " - " + self.Name
-        else:
-            return "未知歌手 - " + self.Name
+        return self.Name
 
     def __repr__(self):
-        if self.__Author.Name:
-            return "<MusicItem Object; Music Name: " + self.Name + "; Music Author Name: " + self.__Author.Name + ">"
-        else:
-            return "<MusicItem Object; Music Name: " + self.Name + ">"
+        return "<MusicItem Object; Music Name: " + self.Name + ">"
 
     @property
     def Name(self) -> str:
@@ -168,7 +107,7 @@ class MusicItem(object):
         self.__FileId = FileId
 
     @property
-    def Author(self) -> MusicAuthor:
+    def Author(self) -> SingerList:
         return self.__Author
 
     @property
@@ -249,23 +188,26 @@ class MusicItem(object):
 
     def ReloadInfo(self) -> None:
         try:
-            self.__MusicObject = requests.get(self.__MusicSource, headers=KuGou.Headers[1]).content
+            OneHeader = Header.GetHeader()
+            self.__MusicObject = requests.get(self.__MusicSource, headers=OneHeader).content
         except Exception:
-            warnings.warn("Reload music object failed .")
+            warnings.warn("载入歌曲数据失败。")
         try:
-            self.__Author.Picture = requests.get(self.__Author.PictureSource, headers=KuGou.Headers[1]).content
+            OneHeader = Header.GetHeader()
+            self.__Author.ReLoadInformation()
         except Exception:
-            warnings.warn("Reload the picture of author failed .")
+            warnings.warn("载入歌手图片失败。")
         try:
-            self.__Picture = requests.get(self.__PictureSource, headers=KuGou.Headers[1]).content
+            OneHeader = Header.GetHeader()
+            self.__Picture = requests.get(self.__PictureSource, headers=OneHeader).content
         except Exception:
-            warnings.warn("Reload the picture of the music failed .")
+            warnings.warn("载入音乐封面失败。")
         return None
 
     def Save(self, Path: str = "./", LrcFile: bool = False, ForceReplace: bool = False) -> None:
         Path = Path.replace("\\", "/").rstrip("/") + "/"
-        MusicFilePath = Path + self.__Author.Name + " - " + self.__Name + ".mp3"
-        LrcFilePath = Path + self.__Author.Name + " - " + self.__Name + ".lrc"
+        MusicFilePath = Path + self.__Author.GetFreshNames() + " - " + self.__Name + ".mp3"
+        LrcFilePath = Path + self.__Author.GetFreshNames() + " - " + self.__Name + ".lrc"
         if LrcFile:
             with open(LrcFilePath, "w", encoding="UTF-8") as File:
                 File.write(self.__Lyrics)
@@ -281,22 +223,28 @@ class MusicItem(object):
                     self.__MusicObject = File.read()
         else:
             if not self.__MusicObject:
-                warnings.warn("The music object is nothing .")
+                warnings.warn("该歌曲文件为空。")
                 return None
             with open(MusicFilePath, "wb") as File:
                 File.write(self.__MusicObject)
-        Music = eyed3.load(MusicFilePath)
+        try:
+            Music = eyed3.load(MusicFilePath)
+        except Exception:
+            warnings.warn("添加歌曲信息失败。")
+            return None
         if Music.info.time_secs <= 60:
-            warnings.warn("The music is too short !")
+            warnings.warn("这个歌曲太短了。(只有不到60秒)")
         if 59.6 <= Music.info.time_secs <= 60.4:
-            warnings.warn("The music might be a VIP music !")
+            warnings.warn("这个歌曲可能是一个VIP歌曲。(时长大概为1分钟)")
         Music.initTag()
         Music.tag.title = self.__Name
-        Music.tag.artist = self.__Author.Name
+        Music.tag.artist = self.__Author.GetFreshNames()
         Music.tag.images.set(3, self.__Picture, "image/jpeg", "Desc", self.__PictureSource)
         Music.tag.images.set(4, self.__Picture, "image/jpeg", "Desc", self.__PictureSource)
-        if self.__Author.Picture:
-            Music.tag.images.set(7, self.__Author.Picture, "image/jpeg", "Desc", self.__Author.PictureSource)
+        if self.__Author.GetFirstPicture():
+            Picture = self.__Author.GetFirstPicture()
+            Description = self.__Author.GetFirstDescription().encode().decode("UTF-16")
+            Music.tag.images.set(7, Picture, "image/jpeg", Description)
         Music.tag.lyrics.set(self.__Lyrics)
         if self.__Album:
             Music.tag.album = self.__Album

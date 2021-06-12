@@ -34,4 +34,5 @@ def GetMusicInfo(MusicItem):  # -> KuGou.Music:
         Got = KuGou.Tools.WangYiYunMusicInfo(MusicItem.FileId)
     else:
         return None
-    return Got.GetMusicInfo()
+    Result = Got.GetMusicInfo()
+    return Result
