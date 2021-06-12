@@ -3,6 +3,7 @@
 
 import os
 import inspect
+import warnings
 
 import KuGou
 
@@ -31,7 +32,7 @@ def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = ".
 
 
 def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
-             LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False) -> None:
+             LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False):
     try:
         os.mkdir(FilePath)
         if DebugFlag:
@@ -64,26 +65,31 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
             return None
         Buffer = []
         Counter = 0
-        for i in Result:
-            i: KuGou.Music
+        for OneMusic in Result:
+            OneMusic: KuGou.Music
             Counter += 1
-            if not (i.FileHash or i.FileId) and i.Name:
+            if not (OneMusic.FileHash or OneMusic.FileId) and OneMusic.Name:
                 raise ValueError("The return value of the Function 'Selector' is incorrect .")
             if DebugFlag:
                 print(f"This is the {Counter} Item .")
-            SuccessFlag = DownloadMusic(i, FilePath, ForceReplace, DebugFlag, LrcFile)
+            SuccessFlag = DownloadMusic(OneMusic, FilePath, ForceReplace, DebugFlag, LrcFile)
             if SuccessFlag:
                 Buffer.append(SuccessFlag)
         Result = Buffer
+    Buffer = []
+    for OneMusic in Result:
+        if OneMusic is None:
+            continue
+        Buffer.append(OneMusic)
     Musics = KuGou.MusicList()
     Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
     if isinstance(Result, KuGou.Music):
         Musics.Append(Result)
     else:
-        for i in Result:
-            Musics.Append(i)
+        for OneMusic in Result:
+            Musics.Append(OneMusic)
     Musics.Save(KuGou.MusicList.Json, MusicSheetPath)
-    return None
+    return Result
 
 
 def DownloadMusic(MusicItem: KuGou.Music, FilePath: str = "./", ForceReplace: bool = False, DebugFlag: bool = False,
@@ -96,13 +102,11 @@ def DownloadMusic(MusicItem: KuGou.Music, FilePath: str = "./", ForceReplace: bo
     try:
         Result = KuGou.Tools.GetMusicInfo(MusicItem)
     except Exception as AllError:
-        if DebugFlag:
-            print(f"Failed : {repr(AllError)}")
+        warnings.warn("获取歌曲信息失败。")
         return None
     SuccessFlag = Result.Save(FilePath, LrcFile, ForceReplace)
     if not SuccessFlag:
-        if DebugFlag:
-            print("Failed !")
+        warnings.warn("获取歌曲信息失败。")
         return None
     if DebugFlag:
         print(" Successful !")

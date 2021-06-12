@@ -213,3 +213,10 @@ class SingerList(object):
             return FirstSinger.Description
         else:
             return ""
+
+    def GetAllSingerGyList(self):
+        return copy.deepcopy(self.__MainList)
+
+    def GetAllSingerOneByOne(self):
+        for OneSinger in self.__MainList:
+            yield copy.deepcopy(OneSinger)

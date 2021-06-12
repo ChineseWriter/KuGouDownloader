@@ -204,7 +204,7 @@ class MusicItem(object):
             warnings.warn("载入音乐封面失败。")
         return None
 
-    def Save(self, Path: str = "./", LrcFile: bool = False, ForceReplace: bool = False) -> None:
+    def Save(self, Path: str = "./", LrcFile: bool = False, ForceReplace: bool = False) -> bool:
         Path = Path.replace("\\", "/").rstrip("/") + "/"
         MusicFilePath = Path + self.__Author.GetFreshNames() + " - " + self.__Name + ".mp3"
         LrcFilePath = Path + self.__Author.GetFreshNames() + " - " + self.__Name + ".lrc"
@@ -215,7 +215,7 @@ class MusicItem(object):
             if ForceReplace:
                 if not self.__MusicObject:
                     warnings.warn("The music object is nothing .")
-                    return None
+                    return False
                 with open(MusicFilePath, "wb") as File:
                     File.write(self.__MusicObject)
             else:
@@ -224,14 +224,14 @@ class MusicItem(object):
         else:
             if not self.__MusicObject:
                 warnings.warn("该歌曲文件为空。")
-                return None
+                return False
             with open(MusicFilePath, "wb") as File:
                 File.write(self.__MusicObject)
         try:
             Music = eyed3.load(MusicFilePath)
         except Exception:
             warnings.warn("添加歌曲信息失败。")
-            return None
+            return False
         if Music.info.time_secs <= 60:
             warnings.warn("这个歌曲太短了。(只有不到60秒)")
         if 59.6 <= Music.info.time_secs <= 60.4:
@@ -249,7 +249,7 @@ class MusicItem(object):
         if self.__Album:
             Music.tag.album = self.__Album
         Music.tag.save(version=(2, 3, 0))
-        return None
+        return True
 
 
 class SheetInfo(object):
