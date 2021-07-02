@@ -56,7 +56,7 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         if not isinstance(Result, list):
             raise ValueError("The return value of the Function 'Selector' is incorrect .")
     if isinstance(Result, KuGou.Music):
-        if not (Result.FileHash or Result.FileId) and Result.Name:
+        if not Result.FileId and Result.Name:
             raise ValueError("The return value of the Function 'Selector' is incorrect .")
         Result = DownloadMusic(Result, FilePath, ForceReplace, DebugFlag, LrcFile)
     else:
@@ -68,7 +68,7 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         for OneMusic in Result:
             OneMusic: KuGou.Music
             Counter += 1
-            if not (OneMusic.FileHash or OneMusic.FileId) and OneMusic.Name:
+            if not OneMusic.FileId and OneMusic.Name:
                 raise ValueError("The return value of the Function 'Selector' is incorrect .")
             if DebugFlag:
                 print(f"This is the {Counter} Item .")

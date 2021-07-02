@@ -18,7 +18,7 @@ def MusicSelector(Musics):
     List.pack()
     for OneMusic in Musics:
         OneMusic: KuGou.Music
-        List.insert("end", OneMusic.From + ": " + OneMusic.Name + " - " + str(OneMusic.Author.GetSetNames()))
+        List.insert("end", OneMusic.From + ": " + OneMusic.Name + " - " + str(OneMusic.Author.YouSetNames))
 
     Buffer = []
 

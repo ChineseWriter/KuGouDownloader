@@ -175,7 +175,7 @@ class MusicList(object):
         for OneSongInfo in Data:  # 遍历每个歌曲及其数据
             OneMusic = KuGou.Music()
             OneMusic.AlbumID = OneSongInfo["AlbumID"]  # 获取歌曲所属专辑的ID
-            OneMusic.FileHash = OneSongInfo["FileHash"]  # 获取歌曲的哈希值
+            OneMusic.FileId = OneSongInfo["FileHash"]  # 获取歌曲的哈希值
             Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
             OneMusic.Name = Name.replace("/", "-").replace("\\", "-")  # 获取歌曲的名字
             OneMusic.Author.SetNames(OneSongInfo["SingerName"].replace("<em>", "").replace("</em>", ""))
@@ -226,7 +226,7 @@ class MusicInfo(object):
         self.__Params = {
             "r": "play/getdata",
             "callback": "jQuery19100824172432511463_1612781797757",
-            "hash": self.__Music.FileHash,
+            "hash": self.__Music.FileId,
             "dfid": "073Nfk3nSl6t0sst5p3fjWxH",
             "mid": "578a45450e07d9022528599a86a22d26",
             "platid": 4,

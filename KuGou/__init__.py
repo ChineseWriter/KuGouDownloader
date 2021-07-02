@@ -11,8 +11,10 @@ Author = "Amundsen Severus Rubeus Bjaaland"
 class SUPPORTED(object):
     KuGou = "KuGou"
     WangYiYun = "WangYiYun"
+    QQ = "QQ"
+    Himalaya = "Himalaya"
 
-    ALL = [KuGou, WangYiYun]
+    ALL = [KuGou, WangYiYun, QQ, Himalaya]
 
 
 try:

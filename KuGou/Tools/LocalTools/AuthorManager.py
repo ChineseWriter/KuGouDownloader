@@ -187,7 +187,8 @@ class SingerList(object):
         for OneSinger in self.__MainList:
             yield OneSinger
 
-    def GetFreshNames(self):
+    @property
+    def FreshNames(self):
         Buffer = ""
         for OneSinger in self.__MainList:
             Buffer = Buffer + OneSinger.Name + "、"
@@ -197,7 +198,8 @@ class SingerList(object):
         self.__Names = Name
         return None
 
-    def GetSetNames(self):
+    @property
+    def YouSetNames(self):
         return self.__Names
 
     def GetFirstPicture(self):
@@ -214,9 +216,7 @@ class SingerList(object):
         else:
             return ""
 
-    def GetAllSingerGyList(self):
-        return copy.deepcopy(self.__MainList)
-
-    def GetAllSingerOneByOne(self):
+    @property
+    def AllSinger(self):
         for OneSinger in self.__MainList:
-            yield copy.deepcopy(OneSinger)
+            yield OneSinger

@@ -105,6 +105,9 @@ class MusicInfo(object):
         Html = Bs(Response.text, "lxml")
         DetailsDiv = Html.find("div", attrs={"class": "cnt"})
         MusicName = DetailsDiv.find("em", attrs={"class": "f-ff2"}).text
+        Authors = DetailsDiv.find("span").find_all("a")
+        for OneAuthor in Authors:
+            self.__Music.Author.Append("WangYiYun", OneAuthor.get("href").split("=")[1], OneAuthor.text)
         if not MusicName:
             MusicName = DetailsDiv.find("em", attrs={"class": "f-ff2"}).get_text()
             if not MusicName:
