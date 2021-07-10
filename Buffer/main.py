@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
-# @FileName  :main.py
-# @Time      :2021/7/10 14:44
-# @Author    :Amundsen Severus Rubeus Bjaaland
+# coding = UTF-8
 
 
 import KuGou
