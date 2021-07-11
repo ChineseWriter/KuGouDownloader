@@ -19,9 +19,11 @@ def GetMusicList(MusicName: str) -> list:
     assert isinstance(MusicName, str)
     Creator1 = KuGou.Tools.KuGouMusicList(MusicName)
     Creator2 = KuGou.Tools.WangYiYunMusicList()
+    Creator3 = KuGou.Tools.QQMusicList(MusicName)
     MusicList1 = Creator1.GetMusicList()
     MusicList2 = Creator2.GetMusicList(MusicName)
-    MusicList = MusicList1 + MusicList2
+    MusicList3 = Creator3.GetMusicList()
+    MusicList = MusicList1 + MusicList2 + MusicList3
     return MusicList
 
 

@@ -6,20 +6,4 @@
 
 
 import KuGou
-
-
-def Selector(MusicList: list):
-    Buffer = None
-    for i in MusicList:
-        i: KuGou.Music
-        if i.From == KuGou.Music.From_WangYiYun:
-            Buffer = i
-            break
-    return Buffer
-
-
-# KuGou.Download(input("Music name : "), FilePath="./Music", LrcFile=True, DebugFlag=True, Selector=lambda x: x)
-# Check = KuGou.CheckMusic("./Music")
-# Check.DeleteVIPMusic(DebugFlag=True)
-KuGou.Download("大鱼 周深", FilePath="./Music", LrcFile=True, DebugFlag=True,
-               Selector=KuGou.Tools.LocalTools.MusicSelector)
+Result = KuGou.Download("朱砂", FilePath="./Music", LrcFile=True, Selector=KuGou.Tools.LocalTools.MusicSelector)

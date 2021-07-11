@@ -177,8 +177,9 @@ class MusicList(object):
             OneMusic.AlbumID = OneSongInfo["AlbumID"]  # 获取歌曲所属专辑的ID
             OneMusic.FileId = OneSongInfo["FileHash"]  # 获取歌曲的哈希值
             Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
-            OneMusic.Name = Name.replace("/", "-").replace("\\", "-")  # 获取歌曲的名字
-            OneMusic.Author.SetNames(OneSongInfo["SingerName"].replace("<em>", "").replace("</em>", ""))
+            OneMusic.Name = Name
+            for Id, Singer in zip(OneSongInfo["SingerId"], OneSongInfo["SingerName"].split("、")):
+                OneMusic.Author.Append(KuGou.SUPPORTED.KuGou, Id, Singer)
             Buffer.append(OneMusic)  # 添加歌曲至列表中
         return Buffer
 

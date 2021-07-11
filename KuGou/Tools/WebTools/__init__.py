@@ -6,3 +6,5 @@ from .KuGouWebTools import MusicInfo as KuGouMusicInfo
 
 from .WangYiYunWebTools import MusicList as WangYiYunMusicList
 from .WangYiYunWebTools import MusicInfo as WangYiYunMusicInfo
+
+from .QQWebTools import MusicList as QQMusicList

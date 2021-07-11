@@ -63,13 +63,10 @@ class MusicList(object):
             OneMusicInfo.From = KuGou.Music.From_WangYiYun
             OneMusicInfo.Name = OneMusic["name"]
             OneMusicInfo.FileId = OneMusic["id"]
-            BufferName = ""
             for OneSinger in OneMusic["ar"]:
                 OneMusicInfo.Author.Append(
                     KuGou.SUPPORTED.WangYiYun, Id=OneSinger["id"], Name=OneSinger["name"]
                 )
-                BufferName = BufferName + OneSinger["name"] + "、"
-            OneMusicInfo.Author.SetNames(BufferName.rstrip("、"))
             Buffer.append(OneMusicInfo)
         self.__CleanedData = Buffer
         return None

@@ -141,7 +141,6 @@ class SingerItem(object):
 class SingerList(object):
     def __init__(self):
         self.__MainList = []
-        self.__Names = ""
 
     def Append(self, PlatForm: str = KuGou.SUPPORTED.KuGou, Id: str = "", Name: str = "",
                PictureSources: tuple = tuple(), LoadFlag: bool = False):
@@ -193,14 +192,6 @@ class SingerList(object):
         for OneSinger in self.__MainList:
             Buffer = Buffer + OneSinger.Name + "、"
         return Buffer.rstrip("、")
-
-    def SetNames(self, Name: str = ""):
-        self.__Names = Name
-        return None
-
-    @property
-    def YouSetNames(self):
-        return self.__Names
 
     def GetFirstPicture(self):
         if len(self.__MainList) > 0:

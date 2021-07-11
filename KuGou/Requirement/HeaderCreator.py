@@ -15,21 +15,26 @@ class UserAgentCreator(object):
 class Header(object):
     HOST_KUGOU = "www.kugou.com"
     HOST_WANGYIYUN = "music.163.com"
+    HOST_QQ = "y.qq.com"
     ORIGIN_KUGOU = "https://www.kugou.com"
     ORIGIN_WANGYIYUN = "https://music.163.com"
+    ORIGIN_QQ = "https://y.qq.com"
     REFERRER_KUGOU_MAIN = "https://www.kugou.com/"
     REFERRER_WANGYIYUN_MAIN = "https://music.163.com/"
+    REFERRER_QQ_MAIN = "https://y.qq.com/"
     REFERRER_KUGOU_SEARCH = "https://www.kugou.com/"
     REFERRER_KUGOU_GETINFO = "https://www.kugou.com/"
     REFERRER_KUGOU_SONGERINFO = "https://www.kugou.com/song/"
     REFERRER_WANGYIYUN_SEARCH = "https://music.163.com/"
     REFERRER_WANGYIYUN_GETINFO = "https://music.163.com/search/"
+    REFERRER_QQ_SEARCH = "https://y.qq.com/"
 
-    HOST_LIST = [HOST_KUGOU, HOST_WANGYIYUN]
-    ORIGIN_LIST = [ORIGIN_KUGOU, ORIGIN_WANGYIYUN]
+    HOST_LIST = [HOST_KUGOU, HOST_WANGYIYUN, HOST_QQ]
+    ORIGIN_LIST = [ORIGIN_KUGOU, ORIGIN_WANGYIYUN, ORIGIN_QQ]
     REFERRER_LIST = [
         REFERRER_KUGOU_SEARCH,
         REFERRER_WANGYIYUN_SEARCH,
+        REFERRER_QQ_SEARCH,
         REFERRER_KUGOU_GETINFO,
         REFERRER_WANGYIYUN_GETINFO
     ]
