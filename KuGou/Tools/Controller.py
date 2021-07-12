@@ -18,10 +18,10 @@ def GetMusicList(MusicName: str) -> list:
     """
     assert isinstance(MusicName, str)
     Creator1 = KuGou.Tools.KuGouMusicList(MusicName)
-    Creator2 = KuGou.Tools.WangYiYunMusicList()
+    Creator2 = KuGou.Tools.WangYiYunMusicList(MusicName)
     Creator3 = KuGou.Tools.QQMusicList(MusicName)
     MusicList1 = Creator1.GetMusicList()
-    MusicList2 = Creator2.GetMusicList(MusicName)
+    MusicList2 = Creator2.GetMusicList()
     MusicList3 = Creator3.GetMusicList()
     MusicList = MusicList1 + MusicList2 + MusicList3
     return MusicList
@@ -35,7 +35,7 @@ def GetMusicInfo(MusicItem):  # -> KuGou.Music:
     elif MusicItem.From == KuGou.Music.From_WangYiYun:
         Got = KuGou.Tools.WangYiYunMusicInfo(MusicItem)
     else:
-        warnings.warn("该网站目前不被支持。")
+        warnings.warn("下载该网站的歌曲目前不被支持。")
         return None
     Result = Got.GetMusicInfo()
     return Result

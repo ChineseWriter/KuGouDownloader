@@ -178,8 +178,9 @@ class MusicList(object):
             OneMusic.FileId = OneSongInfo["FileHash"]  # 获取歌曲的哈希值
             Name = OneSongInfo["SongName"].replace("<em>", "").replace("</em>", "")  # 处理歌曲名中的强调HTML标签
             OneMusic.Name = Name
-            for Id, Singer in zip(OneSongInfo["SingerId"], OneSongInfo["SingerName"].split("、")):
-                OneMusic.Author.Append(KuGou.SUPPORTED.KuGou, Id, Singer)
+            for Id, SingerName in zip(OneSongInfo["SingerId"], OneSongInfo["SingerName"].split("、")):
+                SingerName = SingerName.replace("<em>", "").replace("</em>", "")
+                OneMusic.Author.Append(KuGou.SUPPORTED.KuGou, Id, SingerName)
             Buffer.append(OneMusic)  # 添加歌曲至列表中
         return Buffer
 

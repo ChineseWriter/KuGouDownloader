@@ -21,12 +21,12 @@ class MusicList(object):
         'Referer': 'https://music.163.com/'
     }
 
-    def __init__(self) -> None:
+    def __init__(self, MusicName: str) -> None:
         self.KeyCreator = AESKey()
         self.__GetParams = None
         self.__GetData = []
-        self.__MusicName = ""
         self.__CleanedData = []
+        self.__MusicName = MusicName
 
     def __CreateParams(self) -> dict:
         Data = {
@@ -77,8 +77,7 @@ class MusicList(object):
         self.__MusicName = MusicName
         return None
 
-    def GetMusicList(self, MusicName: str):
-        self.__SetMusicName(MusicName)
+    def GetMusicList(self):
         self.__GetResponse()
         self.__CleanData()
         return self.__CleanedData

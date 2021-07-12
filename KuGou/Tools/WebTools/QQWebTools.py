@@ -71,14 +71,14 @@ class MusicList(object):
 
     def __CleanData(self, Data: list) -> list:
         Buffer = []
-        for i in Data:
+        for OneMusicInfo in Data:
             OneMusic = KuGou.Music()
             OneMusic.From = KuGou.Music.From_QQ
-            OneMusic.AlbumID = i["album"]["mid"]
-            OneMusic.FileId = i["mid"]
-            OneMusic.Name = i["name"]
-            for ii in i["singer"]:
-                OneMusic.Author.Append(KuGou.SUPPORTED.QQ, ii["mid"], ii["name"])
+            OneMusic.AlbumID = OneMusicInfo["album"]["mid"]
+            OneMusic.FileId = OneMusicInfo["mid"]
+            OneMusic.Name = OneMusicInfo["name"]
+            for OneSingerInfo in OneMusicInfo["singer"]:
+                OneMusic.Author.Append(KuGou.SUPPORTED.QQ, OneSingerInfo["mid"], OneSingerInfo["name"])
             Buffer.append(OneMusic)
         return Buffer
 
