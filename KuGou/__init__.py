@@ -4,7 +4,7 @@
 import os
 import sys
 
-Version = "1.0.2"
+Version = "1.0.3"
 Author = "Amundsen Severus Rubeus Bjaaland"
 
 
