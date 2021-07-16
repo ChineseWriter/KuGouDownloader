@@ -8,3 +8,4 @@ from .WangYiYunWebTools import MusicList as WangYiYunMusicList
 from .WangYiYunWebTools import MusicInfo as WangYiYunMusicInfo
 
 from .QQWebTools import MusicList as QQMusicList
+from .QQWebTools import MusicInfo as QQMusicInfo

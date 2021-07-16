@@ -41,8 +41,15 @@ class Manager(object):
         Buffer = []
         for OneMusic in MusicSheet.AllItem:
             OneMusic: MusicItem
-            Buffer.append({"From": OneMusic.From, "FileId": OneMusic.FileId, "MusicName": OneMusic.Name,
-                           "AlbumId": OneMusic.AlbumID})
+            Buffer.append(
+                {
+                    "From": OneMusic.From,
+                    "FileId": OneMusic.FileId,
+                    "MusicName": OneMusic.Name,
+                    "AlbumId": OneMusic.AlbumID,
+                    "MusicId": OneMusic.MusicId
+                }
+            )
         Object["Musics"] = Buffer
         with open(self.__Path, "w", encoding="UTF-8") as File:
             json.dump(Object, File)
@@ -80,6 +87,9 @@ class Manager(object):
                                      AlbumID=OneMusic["AlbumId"])
             elif OneMusic["From"] == MusicItem.From_WangYiYun:
                 OneMusic = MusicItem(Name=OneMusic["MusicName"], FileId=OneMusic["FileId"], From=OneMusic["From"])
+            elif OneMusic["From"] == MusicItem.From_QQ:
+                OneMusic = MusicItem(Name=OneMusic["MusicName"], FileId=OneMusic["FileId"], From=OneMusic["From"],
+                                     MusicId=OneMusic["MusicId"])
             else:
                 OneMusic = MusicItem()
             MusicSheet.Append(OneMusic)

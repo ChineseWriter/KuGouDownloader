@@ -27,7 +27,7 @@ class MusicItem(object):
     From_Himalaya = KuGou.SUPPORTED.Himalaya
 
     def __init__(self, Name: str = "", From: str = "KuGou", MusicSource: str = "",
-                 MusicObject: bytes = b"", FileId: str = "",
+                 MusicObject: bytes = b"", FileId: str = "", MusicId: str = "", Mv: str = "", MvId: str = "",
                  PictureSource: str = "https://www.kugou.com/yy/static/images/play/default.jpg", Picture: bytes = b"",
                  Lyrics: str = "[00:00.00]纯音乐，请欣赏。", Album: str = "",
                  AlbumID: str = "") -> None:
@@ -42,6 +42,9 @@ class MusicItem(object):
         assert isinstance(Lyrics, str)
         assert isinstance(Album, str)
         assert isinstance(AlbumID, str)
+        assert isinstance(Mv, str)
+        assert isinstance(MvId, str)
+        assert isinstance(MusicId, str)
         self.__Author = SingerList()
         self.__Name = Name.replace("/", "").replace("\\", "")
         self.__From = From
@@ -54,6 +57,9 @@ class MusicItem(object):
         self.__LoadLyrics(Lyrics)
         self.__Album = Album
         self.__AlbumID = AlbumID
+        self.__Mv = Mv
+        self.__MvId = MvId
+        self.__MusicId = MusicId
 
     def __str__(self):
         return self.Name
@@ -180,10 +186,47 @@ class MusicItem(object):
         assert isinstance(AlbumID, str)
         self.__AlbumID = AlbumID
 
+    @property
+    def Mv(self):
+        return self.__Mv
+
+    @Mv.setter
+    def Mv(self, NewMv: str = ""):
+        assert isinstance(NewMv, str)
+        self.__Mv = NewMv
+
+    @property
+    def MvId(self):
+        return self.__MvId
+
+    @MvId.setter
+    def MvId(self, NewMvId: str = ""):
+        assert isinstance(NewMvId, str)
+        self.__MvId = NewMvId
+
+    @property
+    def MusicId(self):
+        return self.__MusicId
+
+    @MusicId.setter
+    def MusicId(self, NewMusicId: str = ""):
+        assert isinstance(NewMusicId, str)
+        self.__MusicId = NewMusicId
+
     def ReloadInfo(self) -> None:
         OneHeader = Header.GetHeader()
         try:
-            self.__MusicObject = requests.get(self.__MusicSource, headers=OneHeader).content
+            if self.From == self.From_QQ:
+                from pydub import AudioSegment
+                with open("./Temp.m4a", "wb") as File:
+                    File.write(requests.get(self.__MusicSource, headers=OneHeader).content)
+                AudioSegment.from_file("./Temp.m4a").export("./Temp.mp3")
+                with open("./Temp.mp3", "rb") as File:
+                    self.__MusicObject = File.read()
+                os.remove("./Temp.m4a")
+                os.remove("./Temp.mp3")
+            else:
+                self.__MusicObject = requests.get(self.__MusicSource, headers=OneHeader).content
         except Exception:
             warnings.warn("载入歌曲数据失败。")
         try:
@@ -205,7 +248,7 @@ class MusicItem(object):
         MusicSaveTools.SaveMusic(MusicFilePath, self.__MusicObject, ForceReplace)
         try:
             Music = MusicSaveTools.LoadMusic(MusicFilePath)
-        except Exception:
+        except Exception as AllError:
             warnings.warn("添加歌曲信息失败。")
             return False
         Music.tag.title = self.__Name

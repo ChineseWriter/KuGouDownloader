@@ -17,6 +17,7 @@ from .WebTools import WangYiYunMusicInfo
 
 # 导入QQ音乐必需的下载组件
 from .WebTools import QQMusicList
+from .WebTools import QQMusicInfo
 
 # 导入聚合管理模块(可聚合并操作多个网站的结果)
 from .Controller import GetMusicList, GetMusicInfo

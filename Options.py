@@ -6,4 +6,5 @@
 
 
 import KuGou
+# from Building import QQ
 Result = KuGou.Download("朱砂", FilePath="./Music", LrcFile=True, Selector=KuGou.Tools.LocalTools.MusicSelector)

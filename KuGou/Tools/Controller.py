@@ -34,6 +34,8 @@ def GetMusicInfo(MusicItem):  # -> KuGou.Music:
         Got = KuGou.Tools.KuGouMusicInfo(MusicItem)
     elif MusicItem.From == KuGou.Music.From_WangYiYun:
         Got = KuGou.Tools.WangYiYunMusicInfo(MusicItem)
+    elif MusicItem.From == KuGou.Music.From_QQ:
+        Got = KuGou.Tools.QQMusicInfo(MusicItem)
     else:
         warnings.warn("下载该网站的歌曲目前不被支持。")
         return None

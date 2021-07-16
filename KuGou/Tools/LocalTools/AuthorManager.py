@@ -19,6 +19,8 @@ class SingerItem(object):
     __SUPPORTED = KuGou.SUPPORTED.ALL
     KUGOU = KuGou.SUPPORTED.KuGou
     WANGYIYUN = KuGou.SUPPORTED.WangYiYun
+    QQ = KuGou.SUPPORTED.QQ
+    Himalaya = KuGou.SUPPORTED.Himalaya
 
     def __init__(self, Name: str = "", Id: str = "", Platform: str = KuGou.SUPPORTED.KuGou):
         assert isinstance(Name, str)
@@ -38,6 +40,8 @@ class SingerItem(object):
             self.__LoadInfoFromKuGou()
         elif self.__Platform == self.WANGYIYUN:
             self.__LoadInfoFromWangYiYun()
+        elif self.__Platform == self.QQ:
+            self.__LoadInfoFromQQ()
         else:
             warnings.warn(f"该歌手({self.__Name})来源网站目前不被支持。")
             return None
@@ -85,6 +89,20 @@ class SingerItem(object):
             self.__Name = Html.find("h2", attrs={"id": "artist-name"}).text
             ImageSource = Html.find("div", attrs={"class": "n-artist f-cb"}).find("img").get("src")
             self.__PictureSources.append(ImageSource)
+        except Exception:
+            warnings.warn(f"加载歌手{self.__Name}简介或写真失败。")
+        finally:
+            return None
+
+    def __LoadInfoFromQQ(self):
+        try:
+            OneHeader = Header.GetHeader()
+            OneUrl = "https://y.qq.com/n/ryqq/singer/" + self.__Id
+            OneResponse = requests.get(OneUrl, headers=OneHeader)
+            Html = Bs(OneResponse.text, "lxml")
+            self.__Name = Html.find("h1", attrs={"class": "data__name_txt"}).text
+            self.__Description = Html.find("div", attrs={"class": "data__desc_txt"}).text
+            self.__PictureSources.append("https:" + Html.find("img", attrs={"class": "data__photo"})["src"])
         except Exception:
             warnings.warn(f"加载歌手{self.__Name}简介或写真失败。")
         finally:

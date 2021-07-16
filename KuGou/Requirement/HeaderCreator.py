@@ -29,8 +29,16 @@ class Header(object):
     REFERRER_WANGYIYUN_GETINFO = "https://music.163.com/search/"
     REFERRER_QQ_SEARCH = "https://y.qq.com/"
 
-    HOST_LIST = [HOST_KUGOU, HOST_WANGYIYUN, HOST_QQ]
-    ORIGIN_LIST = [ORIGIN_KUGOU, ORIGIN_WANGYIYUN, ORIGIN_QQ]
+    HOST_LIST = [
+        HOST_KUGOU,
+        HOST_WANGYIYUN,
+        HOST_QQ
+    ]
+    ORIGIN_LIST = [
+        ORIGIN_KUGOU,
+        ORIGIN_WANGYIYUN,
+        ORIGIN_QQ
+    ]
     REFERRER_LIST = [
         REFERRER_KUGOU_SEARCH,
         REFERRER_WANGYIYUN_SEARCH,
