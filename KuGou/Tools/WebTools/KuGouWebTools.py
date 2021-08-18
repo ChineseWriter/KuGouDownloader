@@ -31,7 +31,7 @@ class MusicList(object):
         self.__TimeStamp = int(time.time() * 1000)
         self.__MusicName = MusicName  # 绑定歌曲名
         self.__Signature = ""  # 初始化签名容器
-        self.__GetData = {}  # 初始化数据容器
+        self.__GotData = {}  # 初始化数据容器
         # 初始化JavaScript命名空间
         self.__JSNameSpace = js2py.EvalJs()
         # 添加JavaScript编写的签名构造函数
@@ -112,7 +112,7 @@ class MusicList(object):
 
         :return: 创建的参数，为dict类型。
         """
-        self.__GetData = {
+        self.__GotData = {
             'callback': 'callback123',
             'keyword': self.__MusicName,
             'page': "1",
@@ -133,7 +133,7 @@ class MusicList(object):
             'dfid': '-',
             'signature': self.__Signature,
         }
-        return self.__GetData
+        return self.__GotData
 
     def __GetResponse(self) -> list:
         """从酷狗上获取查询结果：
@@ -145,7 +145,7 @@ class MusicList(object):
         OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SEARCH)
         Response = requests.get(
             'https://complexsearch.kugou.com/v2/search/song?',
-            headers=OneHeader, params=self.__GetData
+            headers=OneHeader, params=self.__GotData
         )  # 获取数据
         String_1 = Response.content.decode('UTF-8')  # 按UTF-8编码解码
         String_2 = String_1[String_1.find('(') + 1:-2]  # 获取可被Json模块解析的内容

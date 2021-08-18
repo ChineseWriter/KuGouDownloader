@@ -253,8 +253,8 @@ class MusicItem(object):
             return False
         Music.tag.title = self.__Name
         Music.tag.artist = self.__Author.FreshNames
-        Music.tag.images.set(3, self.__Picture, "image/jpeg", "Desc", self.__PictureSource)
-        Music.tag.images.set(4, self.__Picture, "image/jpeg", "Desc", self.__PictureSource)
+        Music.tag.images.set(3, self.__Picture, "image/jpeg", "Cover (front)", self.__PictureSource)
+        Music.tag.images.set(4, self.__Picture, "image/jpeg", "Cover (back)", self.__PictureSource)
         if self.__Author.GetFirstPicture():
             Picture = self.__Author.GetFirstPicture()
             try:

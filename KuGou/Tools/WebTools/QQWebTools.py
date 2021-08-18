@@ -183,6 +183,16 @@ class MusicInfo(object):
         Html = BS(OneResponse.text, "lxml")
         Image = "https:" + Html.find("img", attrs={"class": "data__photo"})["src"]
         self.__Music.PictureSource = Image
+        self.__Music.Name = Html.find("h1", attrs={"class": "data__name_txt"})["title"]
+        SingerList = Html.find("div", attrs={"class": "data__singer"}).find_all("a")
+        for OneSingerInfo in SingerList:
+            SingerName = OneSingerInfo["title"]
+            SingerId = OneSingerInfo["href"].split("/")[-1]
+            SingerPictureSource = requests.get("https://y.qq.com/" + OneSingerInfo["href"], headers=Header.GetHeader())
+            PictureSource = BS(SingerPictureSource.text, "lxml").find("img", attrs={"class": "data__photo"})["src"]
+            self.__Music.Author.Append(self.__Music.From_QQ, SingerId, SingerName, (PictureSource,), True)
+        self.__Music.Album = Html.find("ul", attrs={"class": "data__info"}) \
+            .find("li", attrs={"class": "data_info__item_song"}).find("a")["title"]
         OneHeader = Header.GetHeader(Origin=Header.ORIGIN_QQ, Referrer=Header.REFERRER_QQ_MAIN)
         OneResponse = requests.get(self.QQLyricUrl, params=self.__Param_2, headers=OneHeader)
         Lyrics = json.loads(OneResponse.content.decode("UTF-8"))
