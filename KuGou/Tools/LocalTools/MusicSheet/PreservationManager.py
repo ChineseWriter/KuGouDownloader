@@ -81,17 +81,15 @@ class Manager(object):
         for OneMusic in Info["Creator"]:
             MusicSheet.Information.AddCreator(OneMusic)
         MusicSheet.Clear()
-        for OneMusic in MusicList:
-            if OneMusic["From"] == MusicItem.From_KuGou:
-                OneMusic = MusicItem(Name=OneMusic["MusicName"], FileId=OneMusic["FileId"], From=OneMusic["From"],
-                                     AlbumID=OneMusic["AlbumId"])
-            elif OneMusic["From"] == MusicItem.From_WangYiYun:
-                OneMusic = MusicItem(Name=OneMusic["MusicName"], FileId=OneMusic["FileId"], From=OneMusic["From"])
-            elif OneMusic["From"] == MusicItem.From_QQ:
-                OneMusic = MusicItem(Name=OneMusic["MusicName"], FileId=OneMusic["FileId"], From=OneMusic["From"],
-                                     MusicId=OneMusic["MusicId"])
-            else:
-                OneMusic = MusicItem()
+        for OneMusicInfo in MusicList:
+            OneMusicInfo: dict
+            OneMusic = MusicItem(
+                Name=OneMusicInfo.get("MusicName") if OneMusicInfo.get("MusicName") else "",
+                From=OneMusicInfo.get("From") if OneMusicInfo.get("From") else "",
+                FileId=OneMusicInfo.get("FileId") if OneMusicInfo.get("FileId") else "",
+                AlbumID=OneMusicInfo.get("AlbumId") if OneMusicInfo.get("AlbumId") else "",
+                MusicId=OneMusicInfo.get("MusicId") if OneMusicInfo.get("MusicId") else ""
+            )
             MusicSheet.Append(OneMusic)
         return True
 

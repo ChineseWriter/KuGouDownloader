@@ -1,120 +1,158 @@
-# coding = UTF-8
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+# @FileName  :Controller.py
+# @Time      :2021/8/18 12:11
+# @Author    :Amundsen Severus Rubeus Bjaaland
 
 
+# 导入所需要的库
+import copy
 import os
 import inspect
+import traceback
 import warnings
+import logging
 
-import KuGou
+from .Tools import MusicList
+from .Tools import Music
+from .Tools import GetMusicInfo, GetMusicList
+
+# 创建一个日志记录器
+Logger = logging.getLogger(__name__)
 
 
 def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
-               LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False) -> None:
+               LrcFile: bool = True, ForceReplace: bool = False) -> None:
+    """对歌单内的歌曲进行重新下载操作
+
+    :param MusicSheetPath: 歌单文件路径，该路径必须存在，为str类型
+    :param FilePath: 歌曲文件下载路径(将保存的目录)，该路径必须存在，为str类型
+    :param LrcFile: 是否另存歌词文件，为bool类型
+    :param ForceReplace: 是否强制替换已存在的歌曲文件，为bool类型
+    :return: 无返回值
+    """
+    # 尝试创建歌曲文件夹(歌曲保存路径)，若存在则不创建
     try:
         os.mkdir(FilePath)
-        if DebugFlag:
-            print("Create music file folder successfully .")
+        Logger.debug("Create music file folder successfully .")
     except FileExistsError:
-        if DebugFlag:
-            print("The music file folder has been created .")
-    Musics = KuGou.MusicList()
-    Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
-    if DebugFlag:
-        print("Download the songs in the song list again .\n")
-    Counter = 0
-    for OneMusic in Musics.AllItem():
-        OneMusic: KuGou.Music
+        Logger.debug("The music file folder has been created .")
+    # 初始化一个歌单对象(MusicList)
+    Musics = MusicList()
+    # 加载歌单至歌单对象
+    Musics.Load(MusicList.Json, MusicSheetPath)
+    # 开始重新下载歌单内的歌曲
+    Logger.info("Download the songs in the song list again .")
+    Counter = 1
+    for OneMusic in Musics.AllItem:
+        OneMusic: Music
+        Logger.info(f"This is the {Counter} Item ({OneMusic.Name}).")
+        GetMusicInfo(OneMusic).Save(FilePath, LrcFile, ForceReplace)
         Counter += 1
-        if DebugFlag:
-            print(f"This is the {Counter} Item .")
-        DownloadMusic(OneMusic, FilePath, ForceReplace, DebugFlag, LrcFile)
     return None
 
 
 def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
-             LrcFile: bool = False, DebugFlag: bool = False, ForceReplace: bool = False):
+             LrcFile: bool = False, ForceReplace: bool = False):
+    """根据传入参数下载对应歌曲并保存信息至歌单中
+
+    :param MusicName: 歌曲名称，为str类型
+    :param Selector: 根据某种对应关系选择歌曲的函数，该函数输入一个以Music为元素的列表，输出其中一个或多个Music，为None或func类型
+    :param MusicSheetPath: 歌单文件路径，该路径必须存在，为str类型
+    :param FilePath: 歌曲文件下载路径(将保存的目录)，该路径必须存在，为str类型
+    :param LrcFile: 是否另存歌词文件，为bool类型
+    :param ForceReplace: 是否强制替换已存在的歌曲文件，为bool类型
+    :return: 返回下载的歌曲(以Music为元素的列表)
+    """
+    # 尝试创建歌曲文件夹(歌曲保存路径)，若存在则不创建
     try:
         os.mkdir(FilePath)
-        if DebugFlag:
-            print("Create music file folder successfully .")
+        Logger.debug("Create music file folder successfully .")
     except FileExistsError:
-        if DebugFlag:
-            print("The music file folder has been created .")
+        Logger.debug("The music file folder has been created .")
+    # 检查是否指定选择器
     if Selector is None:
-        if DebugFlag:
-            print("The default song selector will be used .")
+        Logger.info("The default song selector will be used .")
 
+        # 若不指定，则使用默认选择器
         def Selector(x):
-            return x[0]
+            # 返回列表第一项，即KuGou网站的第一个搜索结果
+            return list(x[0])
+    # 检查选择器是否为一个函数
     if not inspect.isfunction(Selector):
+        Logger.critical("The Argument 'Selector' must be a function (Executable) .")
         raise ValueError("The Argument 'Selector' must be a function (Executable) .")
     if not MusicName:
-        return None
-    Result = KuGou.Tools.GetMusicList(MusicName)
+        Logger.critical("The Argument 'MusicName' must be a string (Not empty) .")
+        raise ValueError("The Argument 'MusicName' must be a string (Not empty) .")
+    # 获取歌曲列表
+    Result = GetMusicList(MusicName)
+    # 获取Selector函数的返回值
     Result = Selector(Result)
-    if not isinstance(Result, KuGou.Music):
-        if not isinstance(Result, list):
-            raise ValueError("The return value of the Function 'Selector' is incorrect .")
-    if isinstance(Result, KuGou.Music):
-        if not Result.FileId and Result.Name:
-            raise ValueError("The return value of the Function 'Selector' is incorrect .")
-        Result = DownloadMusic(Result, FilePath, ForceReplace, DebugFlag, LrcFile)
-    else:
-        Result: list
-        if not len(Result):
-            return None
-        Buffer = []
-        Counter = 0
-        for OneMusic in Result:
-            OneMusic: KuGou.Music
-            Counter += 1
-            if not OneMusic.FileId and OneMusic.Name:
-                raise ValueError("The return value of the Function 'Selector' is incorrect .")
-            if DebugFlag:
-                print(f"This is the {Counter} Item .")
-            SuccessFlag = DownloadMusic(OneMusic, FilePath, ForceReplace, DebugFlag, LrcFile)
-            if SuccessFlag:
-                Buffer.append(SuccessFlag)
-        Result = Buffer
+    # 检查Selector函数的返回值(检查返回值是否为list)
+    if not isinstance(Result, list):
+        Logger.critical("The return value of the Function 'Selector' is incorrect .")
+        raise ValueError("The return value of the Function 'Selector' is incorrect .")
+    # 检查Selector函数的返回值(检查返回值是否为空)
+    if len(Result) == 0:
+        Logger.info("The return value of the Function 'Selector' is a empty list .")
+        return None
+    # 对每个歌曲进行下载
     Buffer = []
+    Counter = 1  # 下载个数计数器
+    for OneMusic in Result:
+        OneMusic: Music  # 类型标注
+        # 信息输出
+        Logger.info(f"This is the {Counter} Item ({OneMusic.Name}).")
+        # 下载歌曲并获取返回值(下载是否成功)
+        SuccessFlag = DownloadMusic(OneMusic, FilePath, ForceReplace, LrcFile)
+        if SuccessFlag:
+            Buffer.append(SuccessFlag)
+        Counter += 1
+    # 获取下载好的歌曲组成的列表(list)
+    Result = copy.deepcopy(Buffer)
+    # 对Buffer该变量进行更新(清空)
+    Buffer = []  # Buffer.clear()
+    # 删除Result中的None(空值)
     for OneMusic in Result:
         if OneMusic is None:
             continue
         Buffer.append(OneMusic)
-    Musics = KuGou.MusicList()
-    Musics.Load(KuGou.MusicList.Json, MusicSheetPath)
-    if isinstance(Result, KuGou.Music):
-        Musics.Append(Result)
-    else:
-        for OneMusic in Result:
-            Musics.Append(OneMusic)
-    Musics.Save(KuGou.MusicList.Json, MusicSheetPath)
-    return Result
+    # 初始化一个歌单对象(MusicList)
+    Musics = MusicList()
+    # 加载歌单至歌单对象
+    Musics.Load(MusicList.Json, MusicSheetPath)
+    # 添加歌曲到歌单中
+    for OneMusic in Result:
+        Musics.Append(OneMusic)
+    # 保存该歌单
+    Musics.Save(MusicList.Json, MusicSheetPath)
+    return Result  # 返回该列表
 
 
-def DownloadMusic(MusicItem: KuGou.Music, FilePath: str = "./", ForceReplace: bool = False, DebugFlag: bool = False,
-                  LrcFile: bool = True):
-    if DebugFlag:
-        print("The basic information of the music :")
-        print(f"\tName: {MusicItem.Name}")
-    if DebugFlag:
-        print("Ready to download . . .", end="")
+def DownloadMusic(MusicItem: Music, FilePath: str = "./", ForceReplace: bool = False, LrcFile: bool = True):
+    """根据传入参数下载对应歌曲
+
+    :param MusicItem: 根据将要下载的歌曲的对应网站的部分歌曲信息，为KuGou.Music类型
+    :param FilePath: 歌曲文件下载路径(将保存的目录)，该路径必须存在，为str类型
+    :param ForceReplace: 是否强制替换已存在的歌曲文件，为bool类型
+    :param LrcFile: 是否另存歌词文件，为bool类型
+    :return: 返回下载的歌曲，为KuGou.Music类型，与MusicItem参数的Object内存地址相同
+    """
+    Logger.info(f"The name of the song to be downloaded: {MusicItem.Name}")
     try:
-        Result = KuGou.Tools.GetMusicInfo(MusicItem)
-    except Exception as AllError:
-        warnings.warn("获取歌曲信息失败。")
+        Result = GetMusicInfo(MusicItem)
+    except Exception:
+        Logger.warning("获取歌曲信息失败：")
+        traceback.print_exc()
         return None
     SuccessFlag = Result.Save(FilePath, LrcFile, ForceReplace)
     if not SuccessFlag:
-        warnings.warn("获取歌曲信息失败。")
+        Logger.warning("保存歌曲及其信息失败。")
         return None
-    if DebugFlag:
-        print(" Successful !")
-    if DebugFlag:
-        print("The details of this song :")
-        print(f"\tName: {Result.Name}")
-        print(f"\tAlbum: {Result.Album}")
-        print(f"\tAuthor: {Result.Author.Name}")
-        print(f"\tSong Source: {Result.MusicSource}")
-        print(f"\tFrom: {Result.From}")
+    Logger.debug("Successful !")
+    Logger.info(
+        f"歌曲详细信息：歌曲名：{Result.Name}；所属专辑：{Result.Album}；"
+        f"演唱者：{Result.Author.FreshNames}；来源网站：{Result.From}"
+    )
     return Result

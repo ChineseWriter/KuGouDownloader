@@ -3,9 +3,16 @@
 
 import os
 import sys
+import logging
 
 Version = "1.0.3"
 Author = "Amundsen Severus Rubeus Bjaaland"
+
+logging.basicConfig(
+    format="[%(asctime)s](%(levelname)s)%(name)s: %(message)s",
+    datefmt="%Y/%m/%d %H:%M:%S",
+    level=logging.DEBUG
+)
 
 
 class SUPPORTED(object):

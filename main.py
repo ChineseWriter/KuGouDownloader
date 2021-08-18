@@ -5,7 +5,6 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-# 导入所需要的库
 import KuGou
 
 # 下载歌曲
