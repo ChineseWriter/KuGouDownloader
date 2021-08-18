@@ -139,6 +139,7 @@ def DownloadMusic(MusicItem: Music, FilePath: str = "./", ForceReplace: bool = F
     :param LrcFile: 是否另存歌词文件，为bool类型
     :return: 返回下载的歌曲，为KuGou.Music类型，与MusicItem参数的Object内存地址相同
     """
+    # 获取歌曲信息，若失败则打印错误信息
     Logger.info(f"The name of the song to be downloaded: {MusicItem.Name}")
     try:
         Result = GetMusicInfo(MusicItem)
@@ -146,10 +147,12 @@ def DownloadMusic(MusicItem: Music, FilePath: str = "./", ForceReplace: bool = F
         Logger.warning("获取歌曲信息失败：")
         traceback.print_exc()
         return None
+    # 保存歌曲及歌曲信息
     SuccessFlag = Result.Save(FilePath, LrcFile, ForceReplace)
     if not SuccessFlag:
         Logger.warning("保存歌曲及其信息失败。")
         return None
+    # 打印日志
     Logger.debug("Successful !")
     Logger.info(
         f"歌曲详细信息：歌曲名：{Result.Name}；所属专辑：{Result.Album}；"
