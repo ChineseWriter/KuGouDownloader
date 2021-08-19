@@ -36,7 +36,7 @@ class MusicList(object):
             "ct": 24,
             "qqmusic_ver": 1298,
             "new_json": 1,
-            "remoteplace": "txt.yqq.song",
+            "remoteplace": "Text.yqq.song",
             "searchid": 63229658163010696,
             "t": 0,
             "aggr": 1,

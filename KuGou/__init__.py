@@ -40,7 +40,7 @@ class SUPPORTED(object):
 # 尝试加载相关信息，使用try语句防止该包被PyInstaller打包后无法找到文件
 try:
     # 找到该包的依赖包
-    Require = os.path.abspath("./KuGou/KuGouRequirement.txt")
+    Require = os.path.abspath("./KuGou/KuGouRequirement.Text")
     # 找到该包的Logo(KuGou网站的Logo)
     Logo = os.path.abspath("./KuGou/logo.ico")
 except FileNotFoundError:

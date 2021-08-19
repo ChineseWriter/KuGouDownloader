@@ -12,7 +12,7 @@ from .HeaderCreator import Header
 
 # 导入必需的第三方库列表
 try:
-    with open("./KuGou/Requirement/KuGouRequirement.txt", "r", encoding="UTF-8") as File:
+    with open("./KuGou/Requirement/KuGouRequirement.Text", "r", encoding="UTF-8") as File:
         KuGouRequirements = File.read()  # 此数据是文本(字符串)数据
 except FileNotFoundError:
     pass

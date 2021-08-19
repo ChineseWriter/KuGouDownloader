@@ -1,7 +1,13 @@
-# coding = UTF-8
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+# @FileName  :WangYiYunAES.py
+# @Time      :2021/8/19 19:32
+# @Author    :Amundsen Severus Rubeus Bjaaland
+
+
 """爬取网易云网站时需要的密钥构造函数(采用AES的CBC模式加密)。"""
 
-
+# 导入所需要的库
 import random
 import base64
 import os
@@ -11,22 +17,28 @@ from binascii import hexlify
 from Crypto.Cipher import AES
 
 
-class AESKey:
+class AESKey(object):
+    """网易云音乐网站所需AES密钥构造"""
+
     def __init__(self):
-        self.txt = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-        self.i = ''.join(random.sample(self.txt, 16))  # 16为随机数
-        self.i = hexlify(os.urandom(16))[:16].decode('utf -8')  # 16为随机数bytes
-        self.first_key = '0CoJUm6Qyw8W8jud'
+        self.Text = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        self.Item = ''.join(random.sample(self.Text, 16))  # 16为随机数
+        self.Item = hexlify(os.urandom(16))[:16].decode('utf -8')  # 16为随机数bytes
+        self.FirstKey = '0CoJUm6Qyw8W8jud'
 
     def GetParams(self, MusicName):
-        """ 获取加密的参数 params是两次加密的 :param song: :return: """
-        res = self.__CreateParams(MusicName, self.first_key)
-        params = self.__CreateParams(res, self.i)
+        """获取加密的参数
+
+        :param MusicName: 搜索的歌曲名
+        :return: params是两次加密的，encSecKey是密钥，由上述两变量组成一个dict
+        """
+        ResKey = self.__CreateParams(MusicName, self.FirstKey)
+        Params = self.__CreateParams(ResKey, self.Item)
         encSecKey = self.__CreateKey()
-        return {'params': params, 'encSecKey': encSecKey}
+        return {'params': Params, 'encSecKey': encSecKey}
 
     def __CreateParams(self, data, key):
-        """获得params,加密字符长度要是16的倍数
+        """创建密钥,加密字符长度要是16的倍数
 
         :param data:
         :param key:
@@ -50,5 +62,6 @@ class AESKey:
                   '615bb7b725152b3ab17a876aea8a5aa76d2e417629ec4ee341f56135fccf695' \
                   '280104e0312ecbda92557c93870114af6c9d05c4f7f0c3685b7a46bee255932575c' \
                   'ce10b424d813cfe4875d3e82047b97ddef52741d546b8e289dc6935b3ece0462db0a22b8e7'
-        rs = pow(int(hexlify(self.i[::-1].encode('utf-8')), 16), int(enc_key, 16), int(modulus, 16))
+        rs = pow(int(hexlify(self.Item[::-1].encode('utf-8')), 16), int(enc_key, 16), int(modulus, 16))
         return format(rs, 'x').zfill(256)
+

@@ -1,7 +1,9 @@
-# coding = UTF-8
-# KuGouJavaScript.py
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+# @FileName  :KuGouJavaScript.py
+# @Time      :2021/8/19 19:39
+# @Author    :Amundsen Severus Rubeus Bjaaland
 """爬取酷狗网站时需要的签名构造函数(JavaScript)"""
-
 
 # 来源：https://staticssl.kugou.com/common/js/min/inf_public-min.js
 # 格式化文件后第107行
@@ -39,7 +41,7 @@ faultylabs.MD5 = function(a) {
     function h(a, b, String_1) {
         return a ^ b ^ String_1
     }
-    function i(a, b, String_1) {
+    function Item(a, b, String_1) {
         return b ^ (a | ~String_1)
     }
     function j(a, b) {
@@ -159,22 +161,22 @@ faultylabs.MD5 = function(a) {
             a(h(t, u, v), 3873151461, j(p, w + 48), 11),
             a(h(t, u, v), 530742520, j(p, w + 60), 16),
             a(h(t, u, v), 3299628645, j(p, w + 8), 23),
-            a(i(t, u, v), 4096336452, j(p, w), 6),
-            a(i(t, u, v), 1126891415, j(p, w + 28), 10),
-            a(i(t, u, v), 2878612391, j(p, w + 56), 15),
-            a(i(t, u, v), 4237533241, j(p, w + 20), 21),
-            a(i(t, u, v), 1700485571, j(p, w + 48), 6),
-            a(i(t, u, v), 2399980690, j(p, w + 12), 10),
-            a(i(t, u, v), 4293915773, j(p, w + 40), 15),
-            a(i(t, u, v), 2240044497, j(p, w + 4), 21),
-            a(i(t, u, v), 1873313359, j(p, w + 32), 6),
-            a(i(t, u, v), 4264355552, j(p, w + 60), 10),
-            a(i(t, u, v), 2734768916, j(p, w + 24), 15),
-            a(i(t, u, v), 1309151649, j(p, w + 52), 21),
-            a(i(t, u, v), 4149444226, j(p, w + 16), 6),
-            a(i(t, u, v), 3174756917, j(p, w + 44), 10),
-            a(i(t, u, v), 718787259, j(p, w + 8), 15),
-            a(i(t, u, v), 3951481745, j(p, w + 36), 21),
+            a(Item(t, u, v), 4096336452, j(p, w), 6),
+            a(Item(t, u, v), 1126891415, j(p, w + 28), 10),
+            a(Item(t, u, v), 2878612391, j(p, w + 56), 15),
+            a(Item(t, u, v), 4237533241, j(p, w + 20), 21),
+            a(Item(t, u, v), 1700485571, j(p, w + 48), 6),
+            a(Item(t, u, v), 2399980690, j(p, w + 12), 10),
+            a(Item(t, u, v), 4293915773, j(p, w + 40), 15),
+            a(Item(t, u, v), 2240044497, j(p, w + 4), 21),
+            a(Item(t, u, v), 1873313359, j(p, w + 32), 6),
+            a(Item(t, u, v), 4264355552, j(p, w + 60), 10),
+            a(Item(t, u, v), 2734768916, j(p, w + 24), 15),
+            a(Item(t, u, v), 1309151649, j(p, w + 52), 21),
+            a(Item(t, u, v), 4149444226, j(p, w + 16), 6),
+            a(Item(t, u, v), 3174756917, j(p, w + 44), 10),
+            a(Item(t, u, v), 718787259, j(p, w + 8), 15),
+            a(Item(t, u, v), 3951481745, j(p, w + 36), 21),
             m = n(m, s),
             o = n(o, t),
             q = n(q, u),
@@ -192,3 +194,4 @@ faultylabs.MD5 = function(a) {
 
 # 自添加
 GetSign = 'signature = faultylabs.MD5(o.join(""))'
+

@@ -120,7 +120,10 @@ class MusicInfo(object):
                 self.__Music.AlbumID = AlbumId
         OneHeader = Header.GetHeader(Referrer=Header.REFERRER_WANGYIYUN_MAIN)
         Response = requests.get(self.AlbumUrl, params={"id": self.__Music.AlbumID}, headers=OneHeader)
-        self.__Music.PictureSource = Bs(Response.text, "lxml").find("img", attrs={"class": "j-img"})["data-src"]
+        try:
+            self.__Music.PictureSource = Bs(Response.text, "lxml").find("img", attrs={"class": "j-img"})["data-src"]
+        except TypeError:
+            pass
         self.__Music.Author.ReLoadInformation()
         return None
 
