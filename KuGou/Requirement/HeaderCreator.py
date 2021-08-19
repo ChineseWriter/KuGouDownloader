@@ -3,22 +3,34 @@
 # @FileName  :HeaderCreator.py
 # @Time      :2021/6/2 20:01
 # @Author    :Amundsen Severus Rubeus Bjaaland
+"""Http协议请求头构造"""
 
 
 class UserAgentCreator(object):
+    """构造Http协议请求头中User-Agent"""
+
     @classmethod
     def GetUserAgent(cls):
+        """构造Http协议请求头中User-Agent
+
+        :return: Edge浏览器的User-Agent
+        """
         return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 " \
                "Safari/537.36 Edg/91.0.864.37"
 
 
 class Header(object):
+    """构造Http协议请求头"""
+    # 构造时需指定的常量
+    # Host部分
     HOST_KUGOU = "www.kugou.com"
     HOST_WANGYIYUN = "music.163.com"
     HOST_QQ = "y.qq.com"
+    # Origin部分
     ORIGIN_KUGOU = "https://www.kugou.com"
     ORIGIN_WANGYIYUN = "https://music.163.com"
     ORIGIN_QQ = "https://y.qq.com"
+    # Referrer部分
     REFERRER_KUGOU_MAIN = "https://www.kugou.com/"
     REFERRER_WANGYIYUN_MAIN = "https://music.163.com/"
     REFERRER_QQ_MAIN = "https://y.qq.com/"
