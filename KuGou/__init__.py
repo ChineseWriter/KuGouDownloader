@@ -13,7 +13,7 @@ import sys
 # import logging  # 模块测试用
 
 # 模块版本
-Version = "1.0.3"
+Version = "1.0.4"
 # 作者名称
 Author = "Amundsen Severus Rubeus Bjaaland"
 
