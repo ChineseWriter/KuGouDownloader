@@ -5,21 +5,24 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
+# 导入所需库
+# # 导入所需标准库
 import copy
 import warnings
 import re
 import os
-
+# # 导入所需第三方库
 from eyed3.core import AudioFile
 import eyed3
 import requests
-
-from KuGou.Tools.LocalTools.AuthorManager import SingerList
+# # 导入自己编写的模块
+from ..AuthorManager import SingerList
 from KuGou.Requirement import Header
 import KuGou
 
 
 class MusicItem(object):
+    """Music对象，包含一首歌曲的基本信息和保存函数、信息重载函数"""
     __Supported = KuGou.SUPPORTED.ALL
     From_KuGou = KuGou.SUPPORTED.KuGou
     From_WangYiYun = KuGou.SUPPORTED.WangYiYun

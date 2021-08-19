@@ -75,7 +75,7 @@ class Header(object):
     ]
 
     @classmethod
-    def GetHeader(cls, Host=None, Origin=None, Referrer=None, UserAgent=None):
+    def GetHeader(cls, Host=None, Origin=None, Referrer=None, UserAgent=None) -> dict:
         """根据传入的参数构造Http请求头所需dict
 
         :param Host: 该参数必须位于HOST_LIST中，为str类型或None类型(请求头中不予添加)

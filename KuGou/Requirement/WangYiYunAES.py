@@ -20,13 +20,13 @@ from Crypto.Cipher import AES
 class AESKey(object):
     """网易云音乐网站所需AES密钥构造"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.Text = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
         self.Item = ''.join(random.sample(self.Text, 16))  # 16为随机数
         self.Item = hexlify(os.urandom(16))[:16].decode('utf -8')  # 16为随机数bytes
         self.FirstKey = '0CoJUm6Qyw8W8jud'
 
-    def GetParams(self, MusicName):
+    def GetParams(self, MusicName: str) -> dict:
         """获取加密的参数
 
         :param MusicName: 搜索的歌曲名
@@ -37,7 +37,7 @@ class AESKey(object):
         encSecKey = self.__CreateKey()
         return {'params': Params, 'encSecKey': encSecKey}
 
-    def __CreateParams(self, data, key):
+    def __CreateParams(self, data: str, key: str) -> str:
         """创建密钥,加密字符长度要是16的倍数
 
         :param data:

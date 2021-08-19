@@ -54,7 +54,7 @@ def ReDownload(MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = ".
 
 
 def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicList.json", FilePath: str = "./",
-             LrcFile: bool = False, ForceReplace: bool = False):
+             LrcFile: bool = False, ForceReplace: bool = False) -> list:
     """根据传入参数下载对应歌曲并保存信息至歌单中
 
     :param MusicName: 歌曲名称，为str类型
@@ -132,7 +132,7 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
     return Result  # 返回该列表
 
 
-def DownloadMusic(MusicItem: Music, FilePath: str = "./", ForceReplace: bool = False, LrcFile: bool = True):
+def DownloadMusic(MusicItem: Music, FilePath: str = "./", ForceReplace: bool = False, LrcFile: bool = True) -> Music:
     """根据传入参数下载对应歌曲
 
     :param MusicItem: 根据将要下载的歌曲的对应网站的部分歌曲信息，为KuGou.Music类型
