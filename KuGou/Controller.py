@@ -3,6 +3,7 @@
 # @FileName  :Controller.py
 # @Time      :2021/8/18 12:11
 # @Author    :Amundsen Severus Rubeus Bjaaland
+"""集成该包的功能，提供下载函数，下载和歌单管理函数，根据歌单重新下载函数"""
 
 
 # 导入所需要的库
@@ -62,6 +63,7 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
     :param FilePath: 歌曲文件下载路径(将保存的目录)，该路径必须存在，为str类型
     :param LrcFile: 是否另存歌词文件，为bool类型
     :param ForceReplace: 是否强制替换已存在的歌曲文件，为bool类型
+    :raise ValueError: MusicName参数不为str类型，Selector参数不为func类型，Selector返回值不为list类型
     :return: 返回下载的歌曲(以Music为元素的列表)
     """
     # 尝试创建歌曲文件夹(歌曲保存路径)，若存在则不创建
