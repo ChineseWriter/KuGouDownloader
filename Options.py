@@ -6,6 +6,9 @@
 
 
 import KuGou
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 # from Building import QQ
 # Result = KuGou.Download("朱砂", FilePath="./Music", LrcFile=True, Selector=KuGou.Tools.LocalTools.MusicSelector)

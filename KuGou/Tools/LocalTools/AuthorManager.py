@@ -61,7 +61,7 @@ class SingerItem(object):
                 self.__Pictures.append(OneResponse.content)
 
     def __LoadInfoFromKuGou(self):
-        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SONGERINFO)
+        OneHeader = Header.GetHeader(Referrer=Header.REFERRER_KUGOU_SINGERINFO)
         OneUrl = "https://www.kugou.com/singer/" + self.__Id + ".html"
         try:
             OneResponse = requests.get(OneUrl, headers=OneHeader)
@@ -121,7 +121,10 @@ class SingerItem(object):
         return b""
 
     def AppendPictureSource(self, PictureSource: str = ""):
-        self.__PictureSources.append(PictureSource)
+        if isinstance(PictureSource, str):
+            self.__PictureSources.append(PictureSource)
+        else:
+            self.__PictureSources.append("https://www.kugou.com/yy/static/images/play/default.jpg")
         return None
 
     @property

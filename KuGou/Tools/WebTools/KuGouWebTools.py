@@ -260,7 +260,7 @@ class MusicInfo(object):
                 KuGou.SUPPORTED.KuGou,
                 OneSinger["author_id"],
                 OneSinger["author_name"],
-                (OneSinger["avatar"],),
+                (OneSinger.get("avatar"),),
                 True
             )
         self.__Music.Lyrics = Data["lyrics"]
