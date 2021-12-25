@@ -379,10 +379,13 @@ class MusicItem(object):
 
 
 class MusicSaveTools(object):
+    # 该类的日志记录器
+    Logger = logging.getLogger(__name__ + ".MusicSaveTools")
+
     @classmethod
     def SaveMusic(cls, Path: str, MusicObject: bytes, ForceReplace: bool = False) -> bool:
         if not MusicObject:
-            warnings.warn("下载歌曲为空。")
+            cls.Logger.warning("下载歌曲为空。")
             return False
         if os.path.exists(Path):
             if ForceReplace:
@@ -399,7 +402,7 @@ class MusicSaveTools(object):
             with open(Path, "w", encoding="UTF-8") as LyricFile:
                 LyricFile.write(LyricObject)
         except Exception as AllError:
-            warnings.warn(repr(AllError))
+            cls.Logger.warning(repr(AllError))
             return False
         else:
             return True
@@ -408,8 +411,8 @@ class MusicSaveTools(object):
     def LoadMusic(cls, Path: str) -> AudioFile:
         Music = eyed3.load(Path)
         if Music.info.time_secs <= 60:
-            warnings.warn("这个歌曲太短了。(只有不到60秒)")
+            cls.Logger.warning("这个歌曲太短了。(只有不到60秒)")
         if 59.6 <= Music.info.time_secs <= 60.4:
-            warnings.warn("这个歌曲可能是一个VIP歌曲。(时长大概为1分钟)")
+            cls.Logger.warning("这个歌曲可能是一个VIP歌曲。(时长大概为1分钟)")
         Music.initTag()
         return Music

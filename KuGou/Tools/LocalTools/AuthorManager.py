@@ -165,6 +165,9 @@ class SingerList(object):
 
     def Append(self, PlatForm: str = KuGou.SUPPORTED.KuGou, Id: str = "", Name: str = "",
                PictureSources: tuple = tuple(), LoadFlag: bool = False):
+        for i in self.__MainList:
+            if i.Id == Id:
+                return None
         OneSinger = SingerItem()
         OneSinger.Id = Id
         OneSinger.Name = Name
