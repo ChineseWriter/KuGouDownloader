@@ -8,6 +8,7 @@
 from abc import ABC, abstractmethod
 from urllib.parse import urlparse
 from typing import Any
+import re
 
 from .WebList import SupportWebList
 
@@ -52,38 +53,37 @@ class String(Validator):
         if not isinstance(value, str):
             raise TypeError(f'Expected {value!r} to be an str')
         if self.minsize is not None and len(value) < self.minsize:
-            raise ValueError(
-                f'Expected {value!r} to be no smaller than {self.minsize!r}'
-            )
+            raise ValueError(f'Expected {value!r} to be no smaller than {self.minsize!r}')
         if self.maxsize is not None and len(value) > self.maxsize:
-            raise ValueError(
-                f'Expected {value!r} to be no bigger than {self.maxsize!r}'
-            )
+            raise ValueError(f'Expected {value!r} to be no bigger than {self.maxsize!r}')
         if self.predicate is not None and not self.predicate(value):
-            raise ValueError(
-                f'Expected {self.predicate} to be true for {value!r}'
-            )
+            raise ValueError(f'Expected {self.predicate} to be true for {value!r}')
 
 
 class URL(String):
     def validate(self, value):
-        if not isinstance(value, str):
-            raise TypeError(f'Expected {value!r} to be an str')
-        if self.minsize is not None and len(value) < self.minsize:
-            raise ValueError(
-                f'Expected {value!r} to be no smaller than {self.minsize!r}'
-            )
-        if self.maxsize is not None and len(value) > self.maxsize:
-            raise ValueError(
-                f'Expected {value!r} to be no bigger than {self.maxsize!r}'
-            )
-        if self.predicate is not None and not self.predicate(value):
-            raise ValueError(f'Expected {self.predicate} to be true for {value!r}')
+        super(URL, self).validate(value)
         try:
             urlparse(value)
         except Exception:
             raise ValueError(f'Expected {value!r} to be a url')
 
+
+class Lyrics(String):
+    __ten_microsecond_accuracy = re.compile(r"(\[\d\d:\d\d\.\d\d])(.*?)(##Finish)")
+    __one_microsecond_accuracy = re.compile(r"(\[\d\d:\d\d\.\d\d\d])(.*?)(##Finish)")
+
+    def validate(self, value):
+        super(Lyrics, self).validate(value)
+        value = value.replace("\r", "").replace("\n\n", "\n")
+        for Item in value.split("\n"):
+            TestItem = Item + "##Finish"
+            if self.__ten_microsecond_accuracy.match(TestItem):
+                pass
+            elif self.__one_microsecond_accuracy.match(TestItem):
+                pass
+            else:
+                raise ValueError(f'Expected {value!r} to be a formatted lyric file.')
 
 
 class Number(Validator):
