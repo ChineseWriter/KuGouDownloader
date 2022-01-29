@@ -5,10 +5,10 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-from abc import ABC, abstractmethod
-from urllib.parse import urlparse
-from typing import Any
 import re
+from abc import ABC, abstractmethod
+from typing import Any
+from urllib.parse import urlparse
 
 from .WebList import SupportWebList
 
@@ -21,12 +21,15 @@ class Validator(ABC):
         return getattr(obj, self.private_name)
 
     def __set__(self, obj, value):
-        self.validate(value)
-        setattr(obj, self.private_name, value)
+        validated_value = self.validate(value)
+        if validated_value is not None:
+            setattr(obj, self.private_name, validated_value)
+        else:
+            raise ValueError("The verified value is None.")
 
     @abstractmethod
     def validate(self, value):
-        pass
+        return value
 
 
 class OneOf(Validator):
@@ -36,11 +39,12 @@ class OneOf(Validator):
     def validate(self, value):
         if value not in self.options:
             raise ValueError(f'Expected {value!r} to be one of {self.options!r}')
+        return value
 
 
 class SourceWebSite(OneOf):
     def __init__(self):
-        super(SourceWebSite, self).__init__(SupportWebList)
+        super(SourceWebSite, self).__init__(*SupportWebList)
 
 
 class String(Validator):
@@ -58,6 +62,7 @@ class String(Validator):
             raise ValueError(f'Expected {value!r} to be no bigger than {self.maxsize!r}')
         if self.predicate is not None and not self.predicate(value):
             raise ValueError(f'Expected {self.predicate} to be true for {value!r}')
+        return value
 
 
 class URL(String):
@@ -67,6 +72,7 @@ class URL(String):
             urlparse(value)
         except Exception:
             raise ValueError(f'Expected {value!r} to be a url')
+        return value
 
 
 class Lyrics(String):
@@ -75,15 +81,19 @@ class Lyrics(String):
 
     def validate(self, value):
         super(Lyrics, self).validate(value)
+        if not value:
+            return ""
         value = value.replace("\r", "").replace("\n\n", "\n")
-        for Item in value.split("\n"):
-            TestItem = Item + "##Finish"
-            if self.__ten_microsecond_accuracy.match(TestItem):
-                pass
-            elif self.__one_microsecond_accuracy.match(TestItem):
-                pass
+        lyric_list = []
+        for item in value.split("\n"):
+            test_item = item + "##Finish"
+            if self.__ten_microsecond_accuracy.match(test_item):
+                lyric_list.append(item)
+            elif self.__one_microsecond_accuracy.match(test_item):
+                lyric_list.append(item)
             else:
-                raise ValueError(f'Expected {value!r} to be a formatted lyric file.')
+                pass
+        return "\n".join(lyric_list)
 
 
 class Number(Validator):
@@ -102,12 +112,14 @@ class Number(Validator):
             raise ValueError(
                 f'Expected {value!r} to be no more than {self.maxvalue!r}'
             )
+        return value
 
 
 class Bytes(Validator):
     def validate(self, value):
         if not isinstance(value, bytes):
             raise TypeError(f'Expected {value!r} to be bytes')
+        return value
 
 
 class List(Validator):
@@ -121,3 +133,4 @@ class List(Validator):
             for i in value:
                 if not isinstance(i, self.content):
                     raise TypeError(f'Excepted items of {value!r} to be a {self.content}')
+        return value

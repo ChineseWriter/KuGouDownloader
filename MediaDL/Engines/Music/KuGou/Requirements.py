@@ -5,6 +5,10 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
+import time
+
+from MediaDL.Objects import Music
+
 # 来源：https://staticssl.kugou.com/common/js/min/inf_public-min.js
 # 格式化文件后第107行
 Key = "NVPh5oo715z5DIWAeQlhMDsWXXQV4hwt"
@@ -196,6 +200,16 @@ faultylabs.MD5 = function(a) {
 GetSign = 'signature = faultylabs.MD5(o.join(""))'
 
 
+def set_time_stamp() -> int:
+    """获取时间戳
+
+    返回Python标准时间戳的一千倍再取整后的值。
+
+    :return: 获取的时间戳。
+    """
+    return int(time.time() * 1000)
+
+
 def create_data_list(select_name: str, time_stamp: int) -> list:
     """根据数据创建数据包，该数据包将用于创建签名
     :return: 创建的数据包。
@@ -224,8 +238,13 @@ def create_data_list(select_name: str, time_stamp: int) -> list:
     ]
 
 
-def create_params(select_name: str, time_stamp: int, signature: str) -> dict:
-    """创建网络请求必需的参数
+def create_get_list_params(select_name: str, time_stamp: int, signature: str) -> dict:
+    """创建获取歌曲列表必需的参数
+
+    :param select_name: 查询名称
+    :param time_stamp: 时间戳
+    :param signature: 相应的签名
+
     :return: 创建的参数，为dict类型。
     """
     return {
@@ -249,3 +268,24 @@ def create_params(select_name: str, time_stamp: int, signature: str) -> dict:
         'dfid': '-',
         'signature': signature,
     }
+
+
+def create_get_music_params(music: Music, time_stamp: int) -> dict:
+    """创建获取歌曲及其信息必需的参数
+
+    :param music: 歌曲的基本信息，要求存储于该包的标准音乐类型中
+    :param time_stamp: 时间戳
+
+    :return: 创建的参数，为dict类型
+    """
+    params = {
+        "r": "play/getdata",
+        "callback": "jQuery19100824172432511463_1612781797757",
+        "hash": music.master_id,
+        "dfid": "073Nfk3nSl6t0sst5p3fjWxH",
+        "mid": "578a45450e07d9022528599a86a22d26",
+        "platid": 4,
+        "album_id": music.sub_id,
+        "_": str(time_stamp)
+    }
+    return params

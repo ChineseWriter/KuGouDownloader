@@ -8,10 +8,11 @@
 import json
 import os
 import time
+
 import KuGou
 
-from ..MusicSheet import VERSION
 from .MusicItem import MusicItem
+from ..MusicSheet import VERSION
 
 
 class Manager(object):
@@ -45,7 +46,7 @@ class Manager(object):
                 {
                     "From": OneMusic.From,
                     "FileId": OneMusic.FileId,
-                    "MusicName": OneMusic.Name,
+                    "data": OneMusic.Name,
                     "AlbumId": OneMusic.AlbumID,
                     "MusicId": OneMusic.MusicId
                 }
@@ -84,7 +85,7 @@ class Manager(object):
         for OneMusicInfo in MusicList:
             OneMusicInfo: dict
             OneMusic = MusicItem(
-                Name=OneMusicInfo.get("MusicName") if OneMusicInfo.get("MusicName") else "",
+                Name=OneMusicInfo.get("data") if OneMusicInfo.get("data") else "",
                 From=OneMusicInfo.get("From") if OneMusicInfo.get("From") else "",
                 FileId=OneMusicInfo.get("FileId") if OneMusicInfo.get("FileId") else "",
                 AlbumID=OneMusicInfo.get("AlbumId") if OneMusicInfo.get("AlbumId") else "",

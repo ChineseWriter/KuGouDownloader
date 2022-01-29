@@ -7,4 +7,4 @@
 
 from .CirculationObjectsRoot import Picture, Music
 
-from .FunctionObjectRoot import GetList
+from .FunctionObjectRoot import MusicFunction

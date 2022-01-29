@@ -5,5 +5,4 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-if __name__ == "__main__":
-    run_code = 0
+from .Controller import Controller as MediaController

@@ -10,7 +10,7 @@ class UserAgentCreator(object):
     """构造Http协议请求头中User-Agent"""
 
     @classmethod
-    def GetUserAgent(cls):
+    def get_user_agent(cls):
         """构造Http协议请求头中User-Agent
 
         :return: Edge浏览器的User-Agent
@@ -87,7 +87,7 @@ class Header(object):
         if UserAgent is not None:
             OneHeader = {"User-Agent": UserAgent}
         else:
-            OneHeader = {"User-Agent": UserAgentCreator.GetUserAgent()}
+            OneHeader = {"User-Agent": UserAgentCreator.get_user_agent()}
         if Host is not None:
             if Host in cls.HOST_LIST:
                 OneHeader["Host"] = Host

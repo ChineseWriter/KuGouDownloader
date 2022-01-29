@@ -5,11 +5,10 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-import KuGou
-import logging
+from MediaDL.Engines import MediaController
 
-logging.basicConfig(level=logging.INFO)
-
-# from Building import QQ
-# Result = KuGou.Download("朱砂", FilePath="./Music", LrcFile=True, Selector=KuGou.Tools.LocalTools.MusicSelector)
-KuGou.ReDownload(FilePath="./Music")
+if __name__ == "__main__":
+    Controller = MediaController()
+    result_4 = Controller.select_music("我叫长安，你叫故里")
+    result_5 = Controller.get_music_info(result_4[0])
+    a = 0

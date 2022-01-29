@@ -5,18 +5,16 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 """集成该包的功能，提供下载函数，下载和歌单管理函数，根据歌单重新下载函数"""
 
-
 # 导入所需要的库
 import copy
-import os
 import inspect
-import traceback
-import warnings
 import logging
+import os
+import traceback
 
-from .Tools import MusicList
-from .Tools import Music
 from .Tools import GetMusicInfo, GetMusicList
+from .Tools import Music
+from .Tools import MusicList
 
 # 创建一个日志记录器
 Logger = logging.getLogger(__name__)
@@ -85,19 +83,19 @@ def Download(MusicName: str, Selector=None, MusicSheetPath: str = "./KuGouMusicL
         Logger.critical("The Argument 'Selector' must be a function (Executable) .")
         raise ValueError("The Argument 'Selector' must be a function (Executable) .")
     if not MusicName:
-        Logger.critical("The Argument 'MusicName' must be a string (Not empty) .")
-        raise ValueError("The Argument 'MusicName' must be a string (Not empty) .")
+        Logger.critical("The Argument 'data' must be a string (Not empty) .")
+        raise ValueError("The Argument 'data' must be a string (Not empty) .")
     # 获取歌曲列表
     Result = GetMusicList(MusicName)
     # 获取Selector函数的返回值
     Result = Selector(Result)
     # 检查Selector函数的返回值(检查返回值是否为list)
     if not isinstance(Result, list):
-        Logger.critical("The return value of the Function 'Selector' is incorrect .")
-        raise ValueError("The return value of the Function 'Selector' is incorrect .")
+        Logger.critical("The return value of the Function_1 'Selector' is incorrect .")
+        raise ValueError("The return value of the Function_1 'Selector' is incorrect .")
     # 检查Selector函数的返回值(检查返回值是否为空)
     if len(Result) == 0:
-        Logger.info("The return value of the Function 'Selector' is a empty list .")
+        Logger.info("The return value of the Function_1 'Selector' is a empty list .")
         return None
     # 对每个歌曲进行下载
     Buffer = []
