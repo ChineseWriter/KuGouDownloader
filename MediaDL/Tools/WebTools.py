@@ -10,6 +10,7 @@ import traceback
 from typing import Union, Any
 
 import requests
+import urllib3
 
 _Logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ def get_response(url: str, params: dict = {}, header: dict = {},
     :param data: POST方法需要的数据
     :return: 获取的HTTP连接
     """
+    method = method.lower()
     if "User-Agent" not in header:
         header["User-Agent"] = create_user_agent()
     for i in range(0, retry):
@@ -43,12 +45,22 @@ def get_response(url: str, params: dict = {}, header: dict = {},
             elif method == "post":
                 response = requests.post(url, headers=header, params=params, data=data)
             else:
-                _Logger.error(f"Unknown HTTP method: {method}.")
+                _Logger.error(f"不支持的HTTP方法: {method}.")
                 return None
+        except urllib3.exceptions.ProtocolError:
+            _Logger.warning("远程主机强迫关闭了一个现有的连接(请求过于频繁)")
+        except requests.exceptions.ConnectionError:
+            _Logger.warning("网络连接错误")
+        except urllib3.exceptions.MaxRetryError:
+            _Logger.warning("多次尝试连接失败")
+        except urllib3.exceptions.NewConnectionError:
+            _Logger.warning("无法创建新的连接")
+        except TimeoutError:
+            _Logger.warning("连接两方均没有反应")
         except Exception:
-            _Logger.warning(f"Network error:\n{traceback.format_exc()}")
+            _Logger.warning(f"未知的网络错误:\n{traceback.format_exc()}")
         else:
             return response
     else:
-        _Logger.error(f"Network error: too many errors .")
+        _Logger.error(f"发生错误次数过多，该次请求将被取消")
         return None

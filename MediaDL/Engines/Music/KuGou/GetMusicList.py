@@ -12,7 +12,7 @@ from typing import List
 import js2py
 
 from MediaDL.Objects import Music
-from MediaDL.Tools import get_response
+from MediaDL.Tools import get_response, replace
 from .Requirements import create_get_list_params, create_data_list, GetSignFunction, GetSign, set_time_stamp
 
 _Logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ def _clean_data(music_list: list) -> list:
             name_error += 1
             continue
         # 去掉音乐名称中有HTML代码特征的部分
-        music.name = music_name.replace("<em>", "").replace("</em>", "")
+        music.name = replace(music_name)
         # 注明音乐在该网站的主id，在酷狗音乐网站中是该音乐唯一的哈希值
         music.master_id = music_item.get("FileHash")
         # 检查该音乐的主id是否为空
@@ -91,7 +91,7 @@ def _clean_data(music_list: list) -> list:
             if len(singer_id_list) == len(singer_name_list):
                 # 向音乐信息中添加演唱者信息
                 for singer_id, singer_name in zip(singer_id_list, singer_name_list):
-                    music.singer_list.add(str(singer_id), singer_name, "KuGou")
+                    music.singer_list.add(str(singer_id), replace(singer_name), "KuGou")
             else:
                 singers_info_error += 1
         # 将该音乐的信息加入Music对象列表中

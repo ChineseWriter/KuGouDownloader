@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # @FileName  :__init__.py.py
-# @Time      :2022/1/2 13:06
+# @Time      :2022/1/30 19:15
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-from .LocalTools import replace
-from .WebTools import create_user_agent, get_response
+from .GetImage import get_data

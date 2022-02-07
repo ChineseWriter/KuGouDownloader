@@ -8,5 +8,5 @@
 from MediaDL.Objects import Music
 
 
-def get_data() -> Music:
+def get_data(music: Music) -> Music:
     return Music()

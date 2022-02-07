@@ -32,3 +32,8 @@ class MusicFunction(Function):
     def download_music(self, basic_info: Music) -> Music:
         """下载歌曲"""
         return Music()
+
+    @abstractmethod
+    def get_rec_music(self) -> List[Music]:
+        """获取推荐歌曲"""
+        return []

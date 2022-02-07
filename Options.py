@@ -9,6 +9,6 @@ from MediaDL.Engines import MediaController
 
 if __name__ == "__main__":
     Controller = MediaController()
-    result_4 = Controller.select_music("我叫长安，你叫故里")
-    result_5 = Controller.get_music_info(result_4[0])
-    a = 0
+    result_1 = Controller.select_music("吹灭小山河 国风堂、司南")
+    result_2 = Controller.get_music_info(result_1[0])
+    result_3 = result_2.save("./Music")

@@ -11,6 +11,8 @@ SupportWebList = [
     "KuGou",
     "WangYiYun",
     "QQMusic",
+    "BaiduPicture",
+    "BingPicture",
 ]
 
 

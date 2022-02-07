@@ -32,3 +32,7 @@ class WangYiYunFunction(MusicFunction):
         :return: 歌曲的详细信息
         """
         return get_music(basic_info)
+
+    def get_rec_music(self) -> List[Music]:
+        # TODO 完成该函数
+        return []

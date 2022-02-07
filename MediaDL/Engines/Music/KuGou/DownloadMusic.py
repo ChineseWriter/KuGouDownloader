@@ -12,7 +12,7 @@ import re
 from bs4 import BeautifulSoup as bs
 
 from MediaDL.Objects import Music
-from MediaDL.Tools import get_response
+from MediaDL.Tools import get_response, replace
 from .Requirements import set_time_stamp, create_get_music_params
 
 _Logger = logging.getLogger(__name__)
@@ -71,6 +71,23 @@ def _get_music_mv(mv_id: int) -> bytes:
     return b""
 
 
+def _download_music(music: Music, play_url: str, play_backup_url: str) -> Music:
+    if play_url:
+        response = get_response(play_url)
+        if response:
+            music.self_source = play_url
+            music.self_object = response.content
+            return music
+    if play_backup_url:
+        response = get_response(play_backup_url)
+        if response:
+            music.self_source = play_backup_url
+            music.self_object = response.content
+            return music
+    _Logger.warning(f"未找到歌曲{music.name}的源")
+    return music
+
+
 def _clean_data(music: Music, data: dict) -> Music:
     """处理返回的歌曲数据
 
@@ -95,20 +112,13 @@ def _clean_data(music: Music, data: dict) -> Music:
     for one_singer in data["authors"]:
         singer_id = one_singer["author_id"]
         music.singer_list.add(
-            singer_id, one_singer["author_name"],
+            singer_id, replace(one_singer["author_name"]),
             "KuGou", _get_singer_desc(singer_id)
         )
     music.lyrics = data["lyrics"]
     string = re.match("(.*?)( - )(.*?)(-)", data["audio_name"] + "-")
-    music.name = string.group(3).replace("/", "-").replace("\\", "-") if string else data["audio_name"]
-    if data.get("play_url") is not None:
-        music.self_source = data["play_url"]
-        music.self_object = get_response(music.self_source).content
-    elif data.get("play_backup_url") is not None:
-        music.self_source = data["play_backup_url"]
-        music.self_object = get_response(music.self_source).content
-    else:
-        _Logger.warning("This song has no source.")
+    music.name = replace(string.group(3)) if string else data["audio_name"]
+    _download_music(music, data.get("play_url"), data.get("play_backup_url"))
     if data["have_mv"] == 1:
         music.mv = _get_music_mv(int(data['video_id']))
     return music
