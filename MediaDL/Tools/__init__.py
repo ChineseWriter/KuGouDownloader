@@ -5,5 +5,5 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-from .LocalTools import replace
+from .LocalTools import replace, set_log
 from .WebTools import create_user_agent, get_response

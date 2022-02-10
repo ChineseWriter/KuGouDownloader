@@ -31,6 +31,8 @@ def _clean_data(music_list: list) -> List[Music]:
         music.source_site = "WangYiYun"
         music.name = music_item["name"]
         music.master_id = str(music_item["id"])
+        music.sub_id = str(music_item["al"]["id"])
+        music.album = music_item["al"]["name"]
         music.singer_list.description = music.name + "的演唱者"
         for singer_info in music_item["ar"]:
             music.singer_list.add(str(singer_info["id"]), singer_info["name"], "WangYiYun")

@@ -5,5 +5,6 @@
 # @Author    :Amundsen Severus Rubeus Bjaaland
 
 
-if __name__ == "__main__":
-    run_code = 0
+import logging
+
+_Logger = logging.getLogger(__name__)

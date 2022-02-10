@@ -26,6 +26,7 @@ def _check_info(music: Music) -> bool:
     """
     # 检查该歌曲对象是否有主id
     if not music.master_id:
+        _Logger.warning("该歌曲不包含主id，无法查找该歌曲的相关信息")
         return False
     return True
 

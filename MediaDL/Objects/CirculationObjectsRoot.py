@@ -121,6 +121,7 @@ class Picture(Media):
             file_path = os.path.join(path, f"{self.source_site} - {self.name}.jpg")
         with open(file_path, "wb") as File:
             File.write(self.self_object)
+        _Logger.debug("图片保存成功")
         return True
 
 
@@ -134,6 +135,7 @@ class PictureList(InformationList):
     def add(self, source: str, pic_object: bytes, desc: str = "") -> Picture:
         picture_object = Picture(self_source=source, self_object=pic_object, description=desc)
         self.self_objects.append(picture_object)
+        _Logger.debug("成功将一张图片添加入该图片列表中")
         return copy.deepcopy(picture_object)
 
 
@@ -144,8 +146,18 @@ class Person(AdditionalInformation):
     description = String()
 
     def __init__(self, **kwargs):
+        self.name = ""
+        self.id = ""
+        self.source_site = "KuGou"
+        self.description = ""
         super(Person, self).__init__(**kwargs)
         self.__Picture = PictureList()
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
 
 
 class PeopleList(InformationList):
@@ -156,12 +168,17 @@ class PeopleList(InformationList):
         self.self_objects = []
 
     def add(self, person_id: str, name: str, source_site: str, desc: str = ""):
-        for i in self.self_objects:
-            if i.id == person_id:
-                return copy.deepcopy(i)
+        for one_person in self.self_objects:
+            one_person: Person
+            if one_person.id == person_id:
+                _Logger.debug(f"此人({one_person.name})已存在于该人物列表中")
+                return copy.deepcopy(one_person)
         else:
-            person_object = Person(id=person_id, name=name, source_site=source_site, description=desc)
+            person_object = Person(
+                id=person_id, name=name, source_site=source_site, description=desc
+            )
             self.self_objects.append(person_object)
+            _Logger.debug(f"成功将此人({person_object.name})添加入该人物列表中")
             return copy.deepcopy(person_object)
 
     @property
@@ -220,21 +237,25 @@ class Music(Media):
         except (FileExistsError, OSError):
             _Logger.warning("目标目录权限不正确或有其它问题导致目录创建失败")
             return False
-        music_file_path = os.path.join(path, f"{self.__singer_list.name_list} -"
-                                             f" {self.name}.mp3")
-        lyric_file_path = os.path.join(path, f"{self.__singer_list.name_list} -"
-                                             f" {self.name}.lrc")
+        else:
+            _Logger.debug(f"创建目录{path}成功")
+        music_file_path = os.path.join(path, f"{self.__singer_list.name_list} - {self.name}.mp3")
+        lyric_file_path = os.path.join(path, f"{self.__singer_list.name_list} - {self.name}.lrc")
         if replace:
             with open(music_file_path, "wb") as File:
                 File.write(self.self_object)
+            _Logger.info(f"成功创建音乐文件({self.name} - {self.singer_list.name_list}.mp3)并写入数据(若文件已存在则已将原文件覆盖)")
         else:
             if not os.path.exists(music_file_path):
                 with open(music_file_path, "wb") as File:
                     File.write(self.self_object)
+                _Logger.info(f"成功创建音乐文件({self.name} - {self.singer_list.name_list}.mp3)并写入数据")
+            else:
+                _Logger.info(f"该音乐文件({self.name} - {self.singer_list.name_list}.mp3)已存在，不会将该音乐文件覆盖")
         one_music = eyed3.load(music_file_path, (2, 3, 0))
         if one_music is None:
+            _Logger.warning(f"写入歌曲({self.name} - {self.singer_list.name_list})元信息失败，音乐文件将被删除")
             os.remove(music_file_path)
-            _Logger.warning("写入歌曲元信息失败")
             return False
         one_music.initTag((2, 3, 0))
         one_music.tag.title = self.name
@@ -245,6 +266,7 @@ class Music(Media):
         one_music.tag.images.set(3, music_poster.self_object, "image/jpeg", "Cover(front)", music_poster.description)
         one_music.tag.images.set(4, music_poster.self_object, "image/jpeg", "Cover(back)", music_poster.description)
         one_music.tag.save(version=(2, 3, 0))
+        _Logger.info(f"音乐({self.name} - {self.singer_list.name_list})元信息写入完成")
         if lyric_file:
             with open(lyric_file_path, "w", encoding="UTF-8") as File:
                 File.write(self.lyrics)

@@ -8,6 +8,7 @@
 import logging
 import traceback
 from typing import Union, Any
+from urllib.parse import urlparse
 
 import requests
 import urllib3
@@ -45,7 +46,7 @@ def get_response(url: str, params: dict = {}, header: dict = {},
             elif method == "post":
                 response = requests.post(url, headers=header, params=params, data=data)
             else:
-                _Logger.error(f"不支持的HTTP方法: {method}.")
+                _Logger.warning(f"不支持的HTTP方法: {method}.")
                 return None
         except urllib3.exceptions.ProtocolError:
             _Logger.warning("远程主机强迫关闭了一个现有的连接(请求过于频繁)")
@@ -60,6 +61,8 @@ def get_response(url: str, params: dict = {}, header: dict = {},
         except Exception:
             _Logger.warning(f"未知的网络错误:\n{traceback.format_exc()}")
         else:
+            url = urlparse(response.url)
+            _Logger.info(f"成功从{url.scheme}://{url.netloc + url.path}处获取数据")
             return response
     else:
         _Logger.error(f"发生错误次数过多，该次请求将被取消")

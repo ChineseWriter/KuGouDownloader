@@ -79,6 +79,8 @@ def _clean_data(music_list: list) -> list:
             continue
         # 注明音乐在该网站的副id，在酷狗音乐网站中是该音乐的专辑的id
         music.sub_id = music_item.get("AlbumID")
+        # 添加音乐的专辑信息
+        music.album = music_item.get("AlbumName")
         # 注明歌曲的演唱者列表的描述，这里使用通用描述
         music.singer_list.description = music.name + "的演唱者"
         # 获取该音乐的演唱者id的列表

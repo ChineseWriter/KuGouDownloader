@@ -59,7 +59,7 @@ class Controller(object):
 
         return get_one_page
 
-    def select_music(self, select_name: str) -> list:
+    def select_music(self, select_name: str) -> List[Music]:
         with ThreadPoolExecutor() as executor:
             task_list = [
                 executor.submit(search_function.select_music, select_name)
